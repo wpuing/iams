@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>添加 菜单||权限</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">菜单</li>
+                        <li>权限</li>
+                    </ul>
+                    <div class="layui-tab-content" style="height: 270px;">
+                        <div class="layui-tab-item layui-show">
+                            <div class="layui-card-header">
+                                <hr>
+                            </div>
+                            <div class="layui-row layui-card-body">
+                                <form class="layui-form" lay-filter="example">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">名称: </label>
+                                        <div class="layui-input-block">
+                                            <select name="permissionId" lay-verify="required" required="required" lay-search="">
+                                                <option value="">请选择菜单</option>
+                                                <div th:each="menu:${menuList}" >
+                                                    <option th:value="${menu.id}" th:text="${menu.name}"></option>
+                                                </div>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="roleId" th:value="${roleId}" class="layui-input">
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn layui-btn-normal"
+                                                    onclick="layer_close();">取消
+                                            </button>
+                                            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">
+                                                立即提交
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-card-header">
+                                <hr>
+                            </div>
+                            <div class="layui-row layui-card-body">
+                                <form class="layui-form" lay-filter="example1">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">菜单: </label>
+                                        <div class="layui-input-block">
+                                            <select name="menu" lay-verify="required" lay-filter="menu" required="required" lay-search="">
+                                                <option value="">请选择菜单</option>
+                                                <div th:each="permission:${permissionList}" >
+                                                    <option th:value="${permission.id}" th:text="${permission.name}"></option>
+                                                </div>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="roleId" th:value="${roleId}" class="layui-input">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">权限: </label>
+                                        <div class="layui-input-block">
+                                            <select name="permissionId" id="permission" lay-verify="required" required="required" lay-search="">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn layui-btn-normal"
+                                                    onclick="layer_close();">取消
+                                            </button>
+                                            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo2">
+                                                立即提交
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form', 'element'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.jquery,
+            element = layui.element;
+        //监听提交
+        form.on('submit(demo1)', function (data) {//菜单
+            insertOrUpdate(my_localhost + "/rolePermission/add", data.field, '添加菜单');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        form.on('submit(demo2)', function (data) {//权限
+            insertOrUpdate(my_localhost + "/rolePermission/add", data.field, '添加菜单');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //级联
+        form.on('select(menu)', function(data){
+            //data.value 得到被选中的值
+            var url = my_localhost+'/permission/findPermission?parentId=' + data.value;
+            $.post(url,function(data){
+                $("#permission").empty();
+                $("#permission").append(new Option("请选择权限",""));
+                $.each(data.data,function(index,item){
+                    $("#permission").append(new Option(item.name,item.id));
+                });
+                layui.form.render("select");
+            });
+
+        });
+    });
+</script>
+
+</html>

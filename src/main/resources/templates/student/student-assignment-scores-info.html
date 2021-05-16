@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生作业详情</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body style="background-color: #F6F6F6; ">
+<h3 style="margin: 20px;display: none;" id="submit-tips">您确定提交作业吗？</h3>
+<div class="layui-side layui-bg-black layui-m-anim-left" style="display: none;margin-top: 50px;">
+    <div class="layui-side-scroll">
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item ">
+                <a class="" href="javascript:;">一、单选题</a>
+                <dl class="layui-nav-child" th:each="single,userStat:${ads.singleChoiceList}">
+                    <dd>
+                        <a th:href="'#dan'+${single.studentScoresDto.topicId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">二、多选题</a>
+                <dl class="layui-nav-child" th:each="multiple,userStat:${ads.multipleChoiceList}">
+                    <dd>
+                        <a th:href="'#duo'+${multiple.studentScoresDto.topicId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">三、判断题</a>
+                <dl class="layui-nav-child" th:each="judge,userStat:${ads.judgeTopicList}">
+                    <dd>
+                        <a th:href="'#pan'+${judge.studentScoresDto.topicId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item ">
+                <a class="" href="javascript:;">四、填空题</a>
+                <dl class="layui-nav-child" th:each="completion,userStat:${ads.completionTopicList}">
+                    <dd>
+                        <a th:href="'#tian'+${completion.studentScoresDto.topicId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item ">
+                <a class="" href="javascript:;">五、简答题</a>
+                <dl class="layui-nav-child" th:each="subTopic,userStat:${ads.subTopicList}">
+                    <dd>
+                        <a th:href="'#jian'+${subTopic.studentScoresDto.topicId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<blockquote id="head" class="layui-elem-quote layui-fixbar"
+            style="left: 0;width: 100%;top: 0;height: 20px;right: 0;">
+    <i id="question-list" class="layui-icon layui-icon-spread-left"
+       style="margin-right: 15px;cursor: pointer;"></i>
+    <span><a href="">作业：</a> </span>
+    <span><a href="" th:text="${ads.assignment.title}"></a></span>
+    <div class="layui-layout-right" style="top: 10px;right: 50px;">
+        <span>总分：<span style="margin: auto" th:text="${teacherScores}"></span></span>
+        <span>得分：<span style="margin: auto" th:text="${studentScores}"></span></span>
+    </div>
+</blockquote>
+<input id="assignmentId" th:value="${ads.assignment.id}" type="hidden"/>
+<input id="studentNumber" value="stu1v0001" type="hidden"/>
+<fieldset class="layui-elem-field" style="margin: 50px 200px 0 200px;">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>一、单选题</legend>
+        <input id="singleSize" th:value="${ads.singleChoiceList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="single,userStat:${ads.singleChoiceList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'dan'+${single.studentScoresDto.topicId}" th:utext="${single.choiceDto.multipleChoice.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'singleForm'+${userStat.index}" class="layui-form" action="">
+                        <input type="hidden" name="type" th:value="${single.choiceDto.typeId}"/>
+                        <div class="layui-form-item" th:each="choice:${single.choiceDto.multipleChoice.choices}">
+                            <input type="radio" name="result"
+                                   th:checked="${#strings.contains(choice.isKey,1)}"
+                                   th:value="${choice.number}"
+                                   th:title="${choice.number}+'、'+${choice.name}" disabled="disabled">
+                        </div>
+                        <div class="layui-form-item">
+                            <span>得分：</span>
+                            <p th:text="${single.studentScoresDto.sysScores}"></p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>教师答案：</span>
+                            <p th:text="${single.choiceDto.result}"></p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${single.choiceDto.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>二、多选题</legend>
+        <input id="multipleSize" th:value="${ads.multipleChoiceList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="multiple,userStat:${ads.multipleChoiceList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'duo'+${multiple.studentScoresDto.topicId}" th:utext="${multiple.choiceDto.multipleChoice.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'multipleForm'+${userStat.index}" th:id="'multipleForm'+${userStat.index}"
+                          class="layui-form" action="">
+                        <div class="layui-form-item" th:each="choice:${multiple.choiceDto.multipleChoice.choices}">
+                            <input type="checkbox" name="result" lay-skin="primary"
+                                   th:checked="${#strings.contains(choice.isKey,1)}"
+                                   th:value="${choice.number}"
+                                   th:title="${choice.number}+'、'+${choice.name}" disabled="disabled">
+                        </div>
+                        <div class="layui-form-item">
+                            <span>得分：</span>
+                            <p th:text="${multiple.studentScoresDto.sysScores}"></p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>教师答案：</span>
+                            <p th:text="${multiple.choiceDto.result}"></p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${multiple.choiceDto.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>三、判断题</legend>
+        <input id="judgeSize" th:value="${ads.judgeTopicList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="judge,userStat:${ads.judgeTopicList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'pan'+${judge.studentScoresDto.topicId}" th:utext="${judge.topicDto.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'judgeForm'+${userStat.index}" class="layui-form" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <input type="radio" name="result"
+                                       th:checked="${#strings.contains(judge.studentScoresDto.result,'T')}"
+                                       value="T" title="正确" disabled="disabled">
+                                <input type="radio" name="result"
+                                       th:checked="${#strings.contains(judge.studentScoresDto.result,'F')}"
+                                       value="F" title="错误" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>得分：</span>
+                            <p th:text="${judge.studentScoresDto.sysScores}"></p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>教师答案：</span>
+                            <p th:if="${judge.topicDto.result}=='T'">正确</p>
+                            <p th:if="${judge.topicDto.result}=='F'">错误</p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${judge.topicDto.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>四、填空题</legend>
+        <input id="completionSize" th:value="${ads.judgeTopicList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="completion,userStat:${ads.completionTopicList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'tian'+${completion.studentScoresDto.topicId}" th:utext="${completion.topicDto.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'completionForm'+${userStat.index}" class="layui-form" action="">
+                        <div class="layui-form-item">
+                            <input type="text" name="result" th:value="${completion.studentScoresDto.result}" autocomplete="off"
+                                   class="layui-input" disabled="disabled">
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-form-item">
+                                <span>得分：</span>
+                                <div th:if="${completion.studentScoresDto.teacherScores}==null">
+                                    <p th:text="${completion.studentScoresDto.sysScores}"></p>
+                                </div>
+                                <div th:if="${completion.studentScoresDto.teacherScores}!=null">
+                                    <p th:text="${completion.studentScoresDto.teacherScores}"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>教师答案：</span>
+                            <p th:text="${completion.topicDto.result}"></p>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${completion.topicDto.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>五、简答题</legend>
+        <input type="hidden" id="stopicSize" th:value="${ads.subTopicList.size()}"/>
+        <div class="layui-field-box" th:each="stopic,userStat:${ads.subTopicList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'jian'+${stopic.studentScoresDto.topicId}" th:utext="${stopic.topicDto.title}"></div>
+                    <div class="layui-form-item">
+                        <span>备注：</span>
+                        <p th:text="${stopic.topicDto.remark}"></p>
+                    </div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'stopicForm'+${userStat.index}" class="layui-form" action="">
+                        <div class="layui-form-item">
+                           <div th:utext="${stopic.studentScoresDto.result}"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>得分：</span>
+                            <div th:if="${stopic.studentScoresDto.teacherScores}==null">
+                                <p th:text="${stopic.studentScoresDto.sysScores}"></p>
+                            </div>
+                            <div th:if="${stopic.studentScoresDto.teacherScores}!=null">
+                                <p th:text="${stopic.studentScoresDto.teacherScores}"></p>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>教师答案：</span>
+                            <div th:utext="${stopic.topicDto.result}"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+
+</fieldset>
+
+
+<!-- 回到顶部 -->
+<ul class="layui-fixbar" style="margin-right: 15px;">
+    <li class="layui-icon layui-icon-top" lay-type="top"
+        style="font-size: 45px; background-color: rgb(53, 53, 68); display: list-item;"></li>
+</ul>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'form', 'layedit', 'layer'], function () {
+        var element = layui.element,
+            form = layui.form,
+            $ = layui.jquery,
+            layedit = layui.layedit,
+            layer = layui.layer;
+
+        $(document).ready(function () {
+            var secs = 0;//秒数
+            var mins = 0;//分钟
+            var hours = 0;//小时
+            $(".layui-icon-top").click(function () { // 回到顶部
+                if ($('html').scrollTop()) {
+                    $('html').animate({
+                        scrollTop: 0
+                    }, 100); //动画效果
+                    return false;
+                }
+                $('body').animate({
+                    scrollTop: 0
+                }, 100);
+                return false;
+
+            });
+
+        });
+    });
+</script>
+</html>

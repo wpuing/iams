@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生学号列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/static/common/css/ckAll.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- 内容主体区域 -->
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb" lay-separator="/">
+                        <a href="">首页</a>
+                        <a>作业管理</a>
+                        <a href=""><cite>学生学号列表</cite></a>
+                    </span>
+                </div>
+                <div class="layui-card-body">
+                    <button type="button" class="layui-btn" onclick="showCol();">批量添加</button>
+                    <button type="button" class="layui-btn layui-btn-normal add">添加一行</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <input type="hidden" name="assignmentId" id="assignmentId" th:value="${assignmentId}">
+        <!-- 表格主体 -->
+        <table class="layui-table" id="table" lay-filter="table">
+            <thead>
+            <tr>
+                <td>
+                    <input class="ck" type="checkbox" id="checkAll" checked="">
+                    <span class="ckAll">全选</span>
+                </td>
+                <td>编号</td>
+                <td>操作</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="number:${numbers}">
+                <td><input class="check ck" type="checkbox" name="che" checked=""></td>
+                <td><input type="text" class="layui-input" name="number" th:value="${number}"></td>
+                <td>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs del">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    // 获得数据
+    function showCol() {
+        var numbers = [];
+        var check = $("input[name='che']:checked"); //选中的复选框
+        check.each(function() {
+            var row = $(this).parent("td").parent("tr");
+            var number = row.find("[name='number']").val(); //注意html()和val()
+            numbers.push(number);
+        });
+        var resultData= {"assignmentId":$("#assignmentId").val(),"numbers":JSON.stringify(numbers)};
+        alert("数据："+JSON.stringify(resultData));
+        insertOrUpdate(my_localhost + "/assignment/addIssue",resultData, '批量添加作业学生');
+    };
+    //JavaScript代码区域
+    layui.use(['table', 'element', 'form'], function() {
+        var table = layui.table;
+        var $ = layui.$;
+        var form = layui.form;
+        var element = layui.element;
+
+        //因为动态添加的元素class属性是无效的，所以不能用$('.add').click(function(){});
+        $('body').on('click', '.add', function() {
+            //你要添加的html
+            var html = '<tr>' +
+                '<td><input class="check ck" type="checkbox" name="che"  lay-skin="primary"></td>' +
+                '<td><input type="text" class="layui-input" name="number"></td>' +
+                '<td>' +
+                '<a class="layui-btn layui-btn-danger layui-btn-xs del">删除</a>' +
+                '</td>' +
+                '</tr>';
+            //添加到表格最后
+            $(html).appendTo($('#table tbody:last'));
+            form.render(); //因为有select元素，所有添加后要重新渲染一次
+        });
+        $('body').on('click', '.del', function() {
+            if ($('#table tbody tr').length === 1) {
+                layer.msg('只有一条不允许删除。', {
+                    time: 2000
+                });
+            } else {
+                //删除当前按钮所在的tr
+                $(this).closest('tr').remove();
+            }
+        });
+        table.on('tool(table)', function(obj) {
+            if (obj.event === 'addList') {
+                layer.confirm('真的删除行么', function(index) {
+                    layer.alert('ID：' + data.id);
+                    obj.del();
+                    layer.close(index);
+                });
+            }
+        });
+
+    });
+    //全选按钮点击事件
+    $("#checkAll").click(function() {
+        var flag = $("#checkAll").prop("checked");
+        $(".check").each(function() {
+            $(this).prop("checked", flag);
+        });
+    });
+
+    //动态添加元素点击事件失效的解决办法(重要)
+    $(document).on('click', '.check', function() {
+        var flag = $(this).prop("checked");
+        if (!flag) {
+            $("#checkAll").prop("checked", flag);
+        } else {
+            if ($(".check").length == $(".check:checked").length) {
+                $("#checkAll").prop("checked", flag);
+            }
+        }
+    });
+</script>
+
+</html>

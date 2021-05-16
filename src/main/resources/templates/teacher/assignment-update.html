@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>修改作业</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-card-header">
+                    <span style="font-weight: bold;font-size: 18px;">请修改作业信息</span>
+                </div>
+                <div class="layui-row layui-card-body">
+                    <input type="hidden" id="limitingTime1" name="limitingTime1" th:value="${#dates.format(assignment.limitingTime, 'yyyy-MM-dd HH:mm:ss')}" class="layui-input">
+                    <form class="layui-form" lay-filter="example">
+                        <input type="hidden" id="id" name="id" th:value="${assignment.id}"/>
+                        <input type="hidden" id="courseId" name="courseId" th:value="${assignment.courseId}"/>
+                        <input type="hidden" id="teacherId" name="teacherId" th:value="${assignment.teacherId}"/>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">*标题: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" lay-verify="required" lay-reqtext="请输入标题？"
+                                       placeholder="请输入标题" th:value="${assignment.title}" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">描述: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="description" th:value="${assignment.description}" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文件: </label>
+                            <div class="layui-input-block">
+                                <input type="text" id="file" name="file" th:value="${assignment.file}" class="layui-input" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">限时: </label>
+                            <div class="layui-input-block">
+
+                                <input type="text"  name="limitingTime" id="limitingTime" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="uploadPage();">上传文件</button>
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="layer_close();">取消</button>
+                                <button type="submit" class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            laydate = layui.laydate;
+        //日期常规用法
+        var limitingTime= $("#limitingTime1").val();
+        // layer.alert(limitingTime);
+        laydate.render({
+            elem: '#limitingTime',
+            type: 'datetime',
+            format:'yyyy-MM-dd HH:mm:ss',
+            value: limitingTime===''?'':new Date(limitingTime),
+            trigger: 'click'
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            insertOrUpdate(my_localhost + "/assignment/update", data.field, '修改作业');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    function upload(){
+        var formData = new FormData($("#uploadForm")[0])  //创建一个forData
+        formData.append('assignmentFile', $('#aFile')[0].files[0]) //把file添加进去  name命名为img
+        $.ajax({
+            url: my_localhost+"/assignment/upload",
+            data: formData,
+            type: "POST",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                if(data.code=='200'){
+                    $("#file").val(data.data);
+                }else {
+                    layer.alert("上传文件失败："+data.message);
+                }
+            },
+            error: function(data) {
+                layer.alert("上传文件失败："+data.message);
+            }
+        })
+    }
+
+    function uploadPage() {
+        layer.open({
+            type: 1,
+            area: ['400px', '200px'],
+            fix: false, //不固定
+            maxmin: true,
+            shade: 0.4,
+            title: '上传窗口',
+            content:
+                '<div class="layui-card">'+
+                '<div class="layui-card-header">上传文件（非必要上传）</div>'+
+                '<div class="layui-card-body">'+
+                '<form enctype="multipart/form-data" id="uploadForm">'+
+                '<input type="file" name="assignmentFile" id="aFile"/>'+
+                ' </form>'+
+                '</div>'+
+                '</div>'
+            ,
+            btn: ['上传', '取消'],
+            yes: function(index, layero) {
+                upload();
+                layer.close(index);
+            },
+            btn2: function(index, layero) {
+                layer.close(index);
+            }
+        });
+
+    }
+</script>
+
+</html>

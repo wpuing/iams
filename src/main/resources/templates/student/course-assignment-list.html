@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生课程作业列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    吴彦祖
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a th:onclick="layer_show('基本资料','/student/info?id=1','800','560');">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出登录</a></li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <input type="hidden" id="studentId" value="stu1v0001">
+        <input type="hidden" id="total" th:value="${total}">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a th:href="@{'/course/list/studentPage?studentId=stu1v0001'}" class="layui-this">课程列表</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a th:href="@{'/message/list/student'}">留言列表</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('添加留言','/message/add.html/student/2','700','590');">添加留言</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a href="">课程列表</a>
+								<a th:href="@{'/message/list/student'}"><cite>课程作业列表</cite></a>
+							</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card" style="background-color: #FFFFFF;">
+                        <div class="layui-card-header">
+                            <h2 style="margin-left: 2px;">
+                                <span>
+                                    <i class="layui-icon layui-icon-read" style="font-size: 25px; color: #1E9FFF;"></i>
+                                    <span style="margin-left: 5px;" th:text="${course.name}"></span>
+                                </span>
+                                <span style="float: right;margin-right: 10px" th:text="${course.number}"></span>
+                            </h2>
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="layui-collapse" lay-filter="test">
+                                <div class="layui-colla-item">
+                                    <h2 class="layui-colla-title">
+                                        <i class="layui-icon layui-icon-face-smile"
+                                           style="font-size: 18px; color: #1E9FFF;"></i>
+                                        <span>待完成</span>
+                                    </h2>
+                                    <div th:each="taskDto:${unfinishedList}" class="layui-colla-content" style="background-color: #F2F2F2;">
+                                        <div class="layui-panel">
+                                            <div class="layui-card">
+                                                <div class="layui-card-header">
+                                                    <span th:text="${taskDto.assignment.title}" style="font-size: 16px;font-weight: bold;"></span>
+                                                    <a th:href="@{'/assignment/student/info?studentNumber=stu1v0001&id='+${taskDto.assignmentId}}">
+                                                        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal"
+                                                                style="float: right;margin-top: 6px;">开始答题</button>
+                                                    </a>
+                                                </div>
+                                                <div class="layui-card-body">
+                                                    <p><span>描述：</span><span th:text="${taskDto.assignment.description}"></span></p>
+                                                    <p>
+                                                        <span>创建时间：</span><span th:text="${#dates.format(taskDto.assignment.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                        <span>限定时间：</span><span th:text="${#dates.format(taskDto.assignment.limitingTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                    </p>
+                                                    <p><span>答题人数：</span><span th:text="${taskDto.assignment.turnout}"></span><span> 人</span></p>
+                                                    <p><span>文件：</span>
+                                                        <span th:if="${not #strings.isEmpty(taskDto.assignment.file)}">
+                                                            <a  th:href="@{'/assignment/download/'+${taskDto.assignment.file}}">
+                                                                <i class="layui-icon layui-icon-file" style="font-size: 18px; color: #1E9FFF;"></i>
+                                                            </a>
+                                                        </span>
+                                                        <span th:if="${#strings.isEmpty(taskDto.assignment.file)}">空</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                </div>
+                                <div class="layui-colla-item">
+                                    <h2 class="layui-colla-title">
+                                        <i class="layui-icon layui-icon-face-smile"
+                                           style="font-size: 18px; color: #009688;"></i>
+                                        已完成
+                                    </h2>
+                                    <div th:each="taskDto:${finishList}" class="layui-colla-content" style="background-color: #F2F2F2;">
+                                        <div class="layui-panel">
+                                            <div class="layui-card">
+                                                <div class="layui-card-header">
+                                                    <span th:text="${taskDto.assignment.title}" style="font-size: 16px;font-weight: bold;"></span>
+                                                    <a th:href="@{'/assignment/student/info?studentNumber=stu1v0001&id='+${taskDto.assignmentId}}">
+                                                        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal"
+                                                                style="float: right;margin-top: 6px;">查看作业
+                                                    </button>
+                                                    </a>
+                                                    <a th:href="@{'/assignment/student/scores?studentNumber=stu1v0001&id='+${taskDto.assignmentId}}">
+                                                        <button type="button" class="layui-btn layui-btn-sm layui-btn-normal"
+                                                                style="float: right;margin-top: 6px;">查看成绩
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                                <div class="layui-card-body">
+                                                    <p><span>描述：</span><span th:text="${taskDto.assignment.description}"></span></p>
+                                                    <p>
+                                                        <span>创建时间：</span><span th:text="${#dates.format(taskDto.assignment.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                        <span>限定时间：</span><span th:text="${#dates.format(taskDto.assignment.limitingTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                                    </p>
+                                                    <p><span>答题人数：</span><span th:text="${taskDto.assignment.turnout}"></span><span> 人</span></p>
+                                                    <p><span>文件：</span>
+                                                        <span th:if="${not #strings.isEmpty(taskDto.assignment.file)}">
+                                                            <a  th:href="@{'/assignment/download/'+${taskDto.assignment.file}}">
+                                                                <i class="layui-icon layui-icon-file" style="font-size: 18px; color: #1E9FFF;"></i>
+                                                            </a>
+                                                        </span>
+                                                        <span th:if="${#strings.isEmpty(taskDto.assignment.file)}">空</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                </div>
+                                <div class="layui-colla-item">
+                                    <h2 class="layui-colla-title">
+                                        <i class="layui-icon layui-icon-face-smile"
+                                           style="font-size: 18px; color: #FF5722"></i>
+                                        未完成
+                                    </h2>
+                                    <div class="layui-colla-content" style="background-color: #F2F2F2;">
+                                        <div class="layui-panel">
+                                            <div class="layui-card">
+                                                <div class="layui-card-header">
+                                                    <span style="font-size: 16px;font-weight: bold;">第n次作业</span>
+                                                    <button type="button"
+                                                            class="layui-btn layui-btn-sm layui-btn-normal"
+                                                            style="float: right;margin-top: 6px;">开始答题
+                                                    </button>
+                                                </div>
+                                                <div class="layui-card-body">
+                                                    <p><span>描述：</span><span>该作业已经发布了，请同学们尽快做哦~~~</span></p>
+                                                    <p>
+                                                        <span>创建时间：</span><span>2021-4-26 12:30:00</span>
+                                                        &nbsp;&nbsp;&nbsp;
+                                                        <span>限定时间：</span><span>2021-4-28 12:30:00</span>
+                                                    </p>
+                                                    <p><span>答题人数：</span><span></span>35<span> 人</span></p>
+                                                    <p><span>文件：</span><span><i class="layui-icon layui-icon-file"
+                                                                                style="font-size: 18px; color: #1E9FFF;"></i>  </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['element', 'layer', 'flow'], function () {
+        var $ = layui.jquery;
+        var flow = layui.flow;
+        var layer = layui.layer;
+        var element = layui.element;
+
+
+    });
+
+</script>
+</html>

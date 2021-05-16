@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加选择题</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+    <link th:href="@{/static/common/css/ckAll.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- 内容主体区域 -->
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a>作业管理</a>
+								<a href=""><cite>添加选择题</cite></a>
+							</span>
+                </div>
+                <div class="layui-card-body">
+                    <button type="button" class="layui-btn" id="addM">添加到作业</button>
+                    <button type="button" class="layui-btn layui-btn-normal add">添加一行</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <input type="hidden" id="assignmentId" name="assignmentId" th:value="${assignmentId}"/>
+        <label class="layui-form-label" style="text-align: center;line-height: 35px;">题目: </label>
+        <div class="layui-input-block">
+            <textarea id="title" name="title"  style="display: none;"></textarea>
+        </div>
+        <!-- 表格主体 -->
+        <label class="layui-form-label" style="text-align: center;line-height: 65px;">选项: </label>
+        <div class="layui-input-block">
+            <table class="layui-table" id="table" lay-filter="table">
+                <thead>
+                <tr>
+                    <td width="60px">
+                        <input class="ck" type="checkbox" id="checkAll">
+                        <span class="ckAll">全选</span>
+                    </td>
+                    <td>序号</td>
+                    <td>选项</td>
+                    <td>是否答案</td>
+                    <td>操作</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td width="60px"><input class="check ck" type="checkbox" name="che"></td>
+                    <td><input type="text" class="layui-input" name="number"></td>
+                    <td><input type="text" class="layui-input" name="name"></td>
+                    <td><input type="checkbox" class="ck" name="isKey"></td>
+                    <td>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs del">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <form class="layui-form" lay-filter="example">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="text-align: center">分值: </label>
+                <div class="layui-input-block">
+                    <input type="text" name="score" lay-verify="required" lay-reqtext="请输入分值？"
+                           placeholder="请输入分值" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="text-align: center">备注: </label>
+                <div class="layui-input-block">
+                    <textarea name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    // 获得数据
+
+
+    function choices() {
+        var datas = [];
+        var check = $("input[name='che']:checked"); //选中的复选框
+        check.each(function () {
+            var row = $(this).parent("td").parent("tr");
+            var number = row.find("[name='number']").val(); //注意html()和val()
+            var name = row.find("[name='name']").val();
+            var d=0;
+            var daan = row.find("[name='isKey']").prop("checked");//是否是答案
+            if(daan==true){
+                d=1;
+            }
+            var pojo = {"number": number, "name": name,"isKey":d};
+            datas.push(pojo);
+        });
+        return datas;
+    }
+
+    //JavaScript代码区域
+    layui.use(['layedit','table', 'element', 'form'], function () {
+        var table = layui.table;
+        var $ = layui.$;
+        var form = layui.form;
+        var element = layui.element;
+        var layedit = layui.layedit;
+
+
+        //编辑器上传图片，必须在启动器build前面
+        layedit.set({
+            uploadImage: {
+                url: my_localhost+'/assignment/uploadImg/objective' ,//接口url
+                type: 'post' //默认post
+            }
+        });
+        //富文本编辑器
+        var i =layedit.build('title', {}); //建立编辑器
+
+        //因为动态添加的元素class属性是无效的，所以不能用$('.add').click(function(){});
+        $('body').on('click', '.add', function () {
+            //你要添加的html
+            var html = '<tr>' +
+                '<td width="60px"><input class="check ck" type="checkbox" name="che"  lay-skin="primary"></td>' +
+                '<td><input type="text" class="layui-input" name="number"></td>' +
+                '<td><input type="text" class="layui-input" name="name"></td>' +
+                '<td><input type="checkbox" class="ck" name="isKey"></td>' +
+                '<td>' +
+                '<a class="layui-btn layui-btn-danger layui-btn-xs del">删除</a>' +
+                '</td>' +
+                '</tr>';
+            //添加到表格最后
+            $(html).appendTo($('#table tbody:last'));
+            form.render(); //因为有select元素，所有添加后要重新渲染一次
+        });
+        $('body').on('click', '.del', function () {
+            if ($('#table tbody tr').length === 1) {
+                layer.msg('只有一条不允许删除。', {
+                    time: 2000
+                });
+            } else {
+                //删除当前按钮所在的tr
+                $(this).closest('tr').remove();
+            }
+        });
+        table.on('tool(table)', function (obj) {
+            if (obj.event === 'addList') {
+                layer.confirm('真的删除行么', function (index) {
+                    layer.alert('ID：' + data.id);
+                    obj.del();
+                    layer.close(index);
+                });
+            }
+        });
+
+
+        //表单取值
+        $('#addM').on('click', function () {
+            var formData = form.val('example');//获得表单数据
+            var title = layedit.getContent(i);
+            if(title==''){
+                layer.alert("题目为空！！！");
+                return;
+            }
+            var mc = {"title": title, "choices": choices()};//封装题目信息
+            var ot = {
+                "assignmentId": $("#assignmentId").val(), "title": JSON.stringify(mc),'result':formData.result,
+                "score": formData.score, "remark": formData.remark
+            };//组合选择题信息
+            //alert("list： " + JSON.stringify(choices()) + "  ,assignmentId: " + assignmentId + "  ,表单数据：" + JSON.stringify(formData));
+            alert("数据：" + JSON.stringify(ot));
+            insertOrUpdate(my_localhost + "/objectiveTopic/add/addSingle", ot, '添加选择题');
+        });
+
+    });
+    //全选按钮点击事件
+    $("#checkAll").click(function () {
+        var flag = $("#checkAll").prop("checked");
+        $(".check").each(function () {
+            $(this).prop("checked", flag);
+        });
+    });
+
+    //动态添加元素点击事件失效的解决办法(重要)
+    $(document).on('click', '.check', function () {
+        var flag = $(this).prop("checked");
+        if (!flag) {
+            $("#checkAll").prop("checked", flag);
+        } else {
+            if ($(".check").length == $(".check:checked").length) {
+                $("#checkAll").prop("checked", flag);
+            }
+        }
+    });
+</script>
+
+</html>

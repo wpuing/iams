@@ -1,0 +1,61 @@
+.ax {
+	width: 1265px;
+	float: left;
+}
+
+.xx {
+	width: 1200px;
+	float: right;
+	position: relative;
+	top: 9px;
+}
+
+.layui-layout-body {
+	overflow-y: auto;
+}
+
+.layui-form-item .daan {
+	width: 1000px;
+}
+
+.ainfo li {
+	float: left;
+	margin-left: 3px;
+}
+
+.id1 {
+	width: 125px;
+}
+
+.number1 {
+	width: 205px;
+}
+
+.file1 {
+	width: 310px;
+}
+
+.title1 {
+	width: 400px;
+}
+
+.ms {
+	width: 600px;
+}
+
+.xd {
+	width: 240px;
+}
+.ud{
+	position: absolute;
+	top: -18px;
+	left: 90%;
+}
+.update{
+	position: relative;
+	top: 17px;
+}
+.delete{
+	position: relative;
+	top: 17px;
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>编辑作业</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <!--            <li class="layui-nav-item"><a href="javascript:window.history.back(-1)">&#171 返回上一页</a></li>-->
+            <li class="layui-nav-item">
+                <a href="javascript:;">题目导航</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="#danxuan">单选题</a></dd>
+                    <dd><a href="#duoxuan">多择题</a></dd>
+                    <dd><a href="#panduan">判断题</a></dd>
+                    <dd><a href="#tiankong">填空题</a></dd>
+                    <dd><a href="#jianda">简答题</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">添加题目</a>
+                <dl class="layui-nav-child">
+                    <dd><a lay-active="addSingle">选择题</a></dd>
+                    <dd><a lay-active="addJudgment">判断题</a></dd>
+                    <dd><a lay-active="addCompletion">填空题</a></dd>
+                    <dd><a lay-active="addSubjective">简答题</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{'/answer/findInfoByTopicId/'+${ads.assignment.id}}">查看答疑</a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    吴彦祖
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出登录</a></li>
+        </ul>
+    </div>
+    <div class="main-body">
+        <!-- 内容主体区域 -->
+
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>作业信息</legend>
+                        </fieldset>
+                        <div class="layui-card">
+                            <div class="layui-card-body">
+                                <input type="hidden" name="id" id="id" th:value="${ads.assignment.id}"/>
+                                <p><span>ID：</span><span th:text="${ads.assignment.id}"></span></p>
+                                <p><span>课程号：</span><span th:text="${ads.assignment.courseId}"></span></p>
+                                <p><span>总分：</span><span th:text="${score}"></span> <span> 分</span></p>
+                                <p><span>答题人数：</span><span th:text="${ads.assignment.turnout}"></span></p>
+                                <p>
+                                    <span>文件：</span>
+                                    <span th:if="${not #strings.isEmpty(ads.assignment.file)}">
+                                            <span><a th:href="@{'/assignment/download/'+${ads.assignment.file}}">下载</a></span>
+                                        </span>
+                                    <span th:if="${#strings.isEmpty(ads.assignment.file)}">空</span>
+                                </p>
+                                <p><span>标题：</span><span th:text="${ads.assignment.title}"></span></p>
+                                <p><span>创建时间：</span><span th:text="${#dates.format(ads.assignment.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                                <p><span>限定时间：</span><span th:text="${#dates.format(ads.assignment.limitingTime, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                                <p><span>描述：</span><span th:text="${ads.assignment.description}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space15">
+                <!-- 主体 -->
+                <div class="layui-col-md12">
+                    <!--  单选题  -->
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>单选题</legend>
+                        </fieldset>
+                        <div id="danxuan" class="layui-card" th:each="single,userStat:${ads.singleChoiceList}">
+                            <div class="layui-card-body">
+                                <div style="width: 90%;" th:utext="${single.multipleChoice.title}"></div>
+                                <span th:id="'dan'+${single.relationId}" style="margin-top: 10px;margin-right: 15px;" class="layui-layout-right">
+									<button th:onclick="layer_show('修改选择题','/objectiveTopic/updateTopic.html/updateSingle/[[${single.topicId}]]/[[${single.relationId}]]','860','530');"
+                                            type="button" class="layui-btn layui-btn-sm layui-btn-normal">修改</button>
+									<button th:onclick="delAssignemtTopic([[${single.relationId}]],'单选题')"
+                                            type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
+                                </span>
+                            </div>
+                            <hr/>
+                            <div class="layui-card-body">
+                                <form data-th-lay-filter="'singleForm'+${userStat.index}" class="layui-form" action="">
+                                    <div class="layui-form-item">
+                                        <div  th:each="choice:${single.multipleChoice.choices}">
+                                            <input type="radio" name="result"
+                                                   th:checked="${#strings.contains(choice.isKey,1)}"
+                                                   th:value="${choice.number}"
+                                                   th:title="${choice.number}+'、'+${choice.name}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <span>备注：</span>
+                                        <p th:text="${single.remark}"></p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  多选题  -->
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>多选题</legend>
+                        </fieldset>
+                        <div id="duoxuan" class="layui-card" th:each="multiple,userStat:${ads.multipleChoiceList}">
+                            <div class="layui-card-body">
+                                <div style="width: 90%;" th:id="'duo'+${multiple.relationId}" th:utext="${multiple.multipleChoice.title}"></div>
+                                <span style="margin-top: 10px;margin-right: 15px;" class="layui-layout-right">
+											<button th:onclick="layer_show('修改选择题','/objectiveTopic/updateTopic.html/updateSingle/[[${multiple.topicId}]]/[[${multiple.relationId}]]','860','530');"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-normal">修改</button>
+											<button th:onclick="delAssignemtTopic([[${multiple.relationId}]],'多选题')"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
+										</span>
+                            </div>
+                            <hr/>
+                            <div class="layui-card-body">
+                                <form data-th-lay-filter="'multipleForm'+${userStat.index}" th:id="'multipleForm'+${userStat.index}" class="layui-form"
+                                      action="">
+                                    <div class="layui-form-item">
+                                        <div th:each="choice:${multiple.multipleChoice.choices}">
+                                            <input type="checkbox" name="result" lay-skin="primary"
+                                                   th:checked="${#strings.contains(choice.isKey,1)}"
+                                                   th:value="${choice.number}"
+                                                   th:title="${choice.number}+'、'+${choice.name}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <span>备注：</span>
+                                        <p th:text="${multiple.remark}"></p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  判断题  -->
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>判断题</legend>
+                        </fieldset>
+                        <div id="panduan" class="layui-card" th:each="judge,userStat:${ads.judgeTopicList}">
+                            <div class="layui-card-body">
+                                <div style="width: 90%;" th:id="'pan'+${judge.relationId}" th:utext="${judge.title}">
+                                </div>
+                                <span style="margin-top: 10px;margin-right: 15px;" class="layui-layout-right">
+											<button th:onclick="layer_show('修改判断题','/objectiveTopic/updateTopic.html/updateJudgment/[[${judge.topicId}]]/[[${judge.relationId}]]','860','530');"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-normal">修改</button>
+											<button th:onclick="delAssignemtTopic([[${judge.relationId}]],'判断题')"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
+										</span>
+                            </div>
+                            <hr/>
+                            <div class="layui-card-body">
+                                <form data-th-lay-filter="'judgeForm'+${userStat.index}" class="layui-form" action="">
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-inline">
+                                            <input type="radio" name="result"
+                                                   th:checked="${#strings.contains(judge.result,'T')}"
+                                                   value="T" title="正确">
+                                            <input type="radio" name="result"
+                                                   th:checked="${#strings.contains(judge.result,'F')}"
+                                                   value="F" title="错误">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <span>备注：</span>
+                                        <p th:text="${judge.remark}"></p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  填空题  -->
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>填空题</legend>
+                        </fieldset>
+                        <div id="tiankong" class="layui-card" th:each="completion,userStat:${ads.completionTopicList}">
+                            <div class="layui-card-body">
+                                <div style="width: 90%;" th:id="'tian'+${completion.relationId}" th:utext="${completion.title}">
+
+                                </div>
+                                <span style="margin-top: 10px;margin-right: 15px;" class="layui-layout-right">
+											<button th:onclick="layer_show('修改填空题','/objectiveTopic/updateTopic.html/updateCompletion/[[${completion.topicId}]]/[[${completion.relationId}]]','860','530');"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-normal">修改</button>
+											<button th:onclick="delAssignemtTopic([[${completion.relationId}]],'填空题')"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
+										</span>
+                            </div>
+                            <hr/>
+                            <div class="layui-card-body">
+                                <p><span>答案：</span><span th:text="${completion.result}" ></span></p>
+                                <div class="layui-form-item">
+                                    <span>备注：</span>
+                                    <p th:text="${completion.remark}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  简答题  -->
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>简答题</legend>
+                        </fieldset>
+                        <div id="jianda" class="layui-card" th:each="stopic,userStat:${ads.subTopicList}">
+                            <div class="layui-card-body">
+                                <div style="width: 90%;">
+                                    <div th:id="'jian'+${stopic.relationId}" th:utext="${stopic.title}"></div>
+                                    <div class="layui-form-item">
+                                        <span>备注：</span>
+                                        <p th:text="${stopic.remark}"></p>
+                                    </div>
+                                </div>
+                                <span style="margin-top: 10px;margin-right: 15px;" class="layui-layout-right">
+											<button th:onclick="layer_show('修改简答题','/subjectiveTopic/update.html/[[${stopic.topicId}]]','860','530');"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-normal">修改</button>
+											<button th:onclick="delAssignemtTopic([[${stopic.relationId}]],'简答题')"
+                                                    type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
+										</span>
+                            </div>
+                            <hr/>
+                            <div class="layui-card-body">
+                                <span>答案：</span><div th:id="'demo'+${userStat.index}" th:utext="${stopic.result}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['element','form', 'laydate', 'layer', 'util'], function () {
+        var laydate = layui.laydate;
+        var element = layui.element;
+        var util = layui.util;
+        //返回顶部
+        util.fixbar({
+            top: true,
+            css: {
+                right: 15,
+                bottom: 35
+            },
+            bgcolor: '#2a96ff !important;display:block;',
+            showHeight: 100,
+            click: function (type) {
+                if (type === 'top') {
+                    $('.main-body').animate({ //主要代码
+                        scrollTop: 0
+                    }, 200);
+                }
+            }
+        });
+
+        //获得作业id
+        var assId = $("#id").val();
+        //点击事件
+        util.event('lay-active', {
+            addSingle: function (othis) {//选择题
+                layer_show("添加选择题", my_localhost + "/assignment/addTopic.html/addSingle/" + assId, 860, 530);
+            }
+            , addJudgment: function (othis) {//判断题
+                layer_show("添加判断题", my_localhost + "/assignment/addTopic.html/addJudgment/" + assId, 860, 530);
+            }
+            , addCompletion: function (othis) {//填空题
+                layer_show("添加填空题", my_localhost + "/assignment/addTopic.html/addCompletion/" + assId, 860, 530);
+            }
+            , addSubjective: function (othis) {//主观题
+                layer_show("添加主观题", my_localhost + "/assignment/addTopic.html/addSubjective/" + assId, 860, 530);
+            }
+        });
+
+    });
+
+    function delAssignemtTopic(id, title) {
+        deleted(my_localhost + "/assignment/deleteTopic/" + id, title);
+    }
+</script>
+
+</html>

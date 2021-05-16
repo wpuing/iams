@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iams.core.mapper.StudentResultMapper">
+
+    <resultMap id="studentAssignmentScores" type="com.iams.core.dto.scores.StudentScoresDto" autoMapping="true">
+        <id column="os_topic_id" property="topicId"></id>
+        <id column="type_id" property="typeId"></id>
+        <id column="sys_score" property="sysScores"></id>
+        <id column="teacher_score" property="teacherScores"></id>
+        <id column="result" property="result"></id>
+    </resultMap>
+
+    <select id="selectTopicByNumber" parameterType="java.util.Map"
+            resultType="com.iams.core.dto.student.StudentResultDto">
+        SELECT
+        sr.id studentResultId,sr.os_topic_id,sr.topic_id,sr.type_id,sr.score,tp.result
+        FROM
+        student_result sr
+        INNER JOIN
+        <if test="type != null and type == 1">
+            single
+        </if>
+        <if test="type != null and type == 2">
+            multiterm
+        </if>
+        <if test="type != null and type == 3">
+            judgment
+        </if>
+        <if test="type != null and type == 4">
+            completion
+        </if>
+        <if test="type != null and type == 5">
+            subjective
+        </if>
+         tp
+        ON tp.id=sr.topic_id
+        WHERE
+        sr.assignment_id=#{assignmentId}
+        AND sr.student_id=#{studentNumber}
+        AND sr.type_id=#{typeId}
+    </select>
+
+
+    <select id="selectScoresByNumber" parameterType="java.util.Map"
+            resultMap="studentAssignmentScores">
+        SELECT
+        <if test="type != null and type lt 4">
+            sr.os_topic_id,sr.type_id,tp.score sys_score,null teacher_score,tp.result
+        </if>
+        <if test="type != null and type gt 3">
+            sr.os_topic_id,sr.type_id,tp.sys_score,tp.teacher_score,tp.result
+        </if>
+        FROM
+        student_result sr
+        INNER JOIN
+        <if test="type != null and type == 1">
+            single
+        </if>
+        <if test="type != null and type == 2">
+            multiterm
+        </if>
+        <if test="type != null and type == 3">
+            judgment
+        </if>
+        <if test="type != null and type == 4">
+            completion
+        </if>
+        <if test="type != null and type == 5">
+            subjective
+        </if>
+         tp
+        ON tp.id=sr.topic_id
+        WHERE
+        sr.assignment_id=#{assignmentId}
+        AND sr.student_id=#{studentNumber}
+        AND sr.type_id=#{typeId}
+    </select>
+</mapper>

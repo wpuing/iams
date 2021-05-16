@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v4.0.1">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/floating-labels.css}" />
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/login.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/static/lib/layui/css/layui.css}"/>
+    <script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+</head>
+<body>
+<div class="main_box shadow-lg p-3 mb-5 bg-white rounded">
+    <form class="form-signin">
+        <div class="text-center mb-4">
+            <!-- <img class="mb-4" src="../assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"> -->
+            <h1 class="h3 mb-3 font-weight-normal">智能作业管理系统 v1.0.0</h1>
+<!--            <p>欢迎您的登录！</p>-->
+        </div>
+
+        <div class="form-label-group">
+            <input type="email" id="account" class="form-control" placeholder="Email address" required autofocus>
+            <label for="account">邮箱/学号/教职工号/员工号</label>
+        </div>
+
+        <div class="form-label-group">
+            <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+            <label for="password">密码</label>
+        </div>
+        <div class="form-row">
+            <div class="col-8">
+                <input type="text" id="captcha" name="captcha" class="form-control" placeholder="验证码">
+            </div>
+            <div class="col-4">
+                <div class="captcha">
+                        <img th:src="@{/kaptcha}" onclick="this.src='/kaptcha?d='+new Date()*1">
+                </div>
+            </div>
+        </div>
+        <div class="checkbox mb-3" style="margin-top: 8px;">
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="student" name="role" value="student" class="custom-control-input">
+                <label class="custom-control-label" for="student">学生</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="teacher" name="role" value="teacher" class="custom-control-input">
+                <label class="custom-control-label" for="teacher">教师</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="admin" name="role" value="admin" class="custom-control-input">
+                <label class="custom-control-label" for="admin">管理员</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="superAdmin" name="role" value="superAdmin" class="custom-control-input">
+                <label class="custom-control-label" for="superAdmin">超级管理员</label>
+            </div>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="button" onclick="login()">登录</button>
+        <button class="btn btn-lg btn-secondary btn-block" type="reset">重置</button>
+        <button class="btn btn-lg btn-info btn-block" type="button"
+                onclick="layer_show('用户注册','/register.html',950,550)">没有账号？去注册 >></button>
+    </form>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    layui.use('layer', function() {
+
+    });
+    function login() {
+        var account = $("#account").val();
+        var password = $("#password").val();
+        var captcha = $("#captcha").val();
+        var role=$('input:radio[name="role"]:checked').val();
+        if(role==null){
+            layer.msg("请选择角色登录！");
+            return false;
+        }
+        if(captcha==''){
+            layer.msg("请输入验证码！");
+            return false;
+        }
+        var userInfo = {'username':account,'password':password,'role':$('input[name="role"]:checked').val(),"captcha":captcha};
+        $.post(my_localhost+'/login',userInfo, function (data) {
+            if(data.code=='200'){
+                location.href=data.data;
+            }else{
+                layer.alert(data.message);
+            }
+        });
+    }
+
+</script>
+</html>

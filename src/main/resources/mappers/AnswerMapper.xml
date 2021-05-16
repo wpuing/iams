@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iams.core.mapper.AnswerMapper">
+    <resultMap id="allByTopic" type="com.iams.core.dto.AnswerDto" autoMapping="true">
+            <id column="fId" property="id"></id>
+            <id column="fassId" property="assignmentId"></id>
+            <id column="fat" property="author"></id>
+            <id column="fcon" property="content"></id>
+            <id column="fct" property="createTime"></id>
+            <collection property="kids" javaType="java.util.ArrayList"
+                        ofType="com.iams.core.pojo.Answer">
+                <id column="kId" property="id"></id>
+                <id column="kassId" property="assignmentId"></id>
+                <id column="kat" property="author"></id>
+                <id column="kcon" property="content"></id>
+                <id column="kct" property="createTime"></id>
+            </collection>
+    </resultMap>
+
+    <select id="findByTopicId" resultMap="allByTopic" parameterType="java.lang.Integer">
+        SELECT * FROM (
+            SELECT f.id fId, f.assignment_id fassId,f.author fat,f.content fcon,f.create_time fct
+            FROM answer f
+            WHERE f.assignment_id=#{assignmentId} AND f.parent_id IS NULL AND f.`status`=0) a
+        LEFT JOIN (
+            SELECT  k.id kId, k.assignment_id kassId,k.author kat,k.parent_id kpId,k.content kcon,k.create_time kct
+            FROM answer k
+            WHERE k.assignment_id=#{assignmentId} AND k.parent_id IS NOT NULL AND k.`status`=0) b
+        ON a.fId=b.kpId
+    </select>
+<!--    SELECT-->
+<!--    f.id fId, f.assignment_id fassId,f.author fat,f.content fcon,f.create_time fct,-->
+<!--    k.id kId, k.assignment_id kassId,k.author kat,k.content kcon,k.create_time kct-->
+<!--    FROM answer f-->
+<!--    LEFT JOIN answer k-->
+<!--    ON f.id=k.parent_id  ${ew.customSqlSegment}-->
+
+</mapper>

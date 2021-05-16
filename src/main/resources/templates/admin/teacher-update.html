@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>修改教师</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-card-header">
+                    <span style="font-weight: bold;font-size: 18px;">请输入信息</span>
+                </div>
+                <div class="layui-row layui-card-body">
+                    <form class="layui-form" lay-filter="example">
+                        <input type="hidden" name="id" id="id" th:field="${teacher.id}"/>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">编号: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="number" lay-verify="required" lay-reqtext="请输入编号？"
+                                       placeholder="请输入编号" autocomplete="off"
+                                       class="layui-input" th:field="${teacher.number}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">姓名: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="name" lay-verify="required" lay-reqtext="请输入姓名？"
+                                       placeholder="请输入姓名" autocomplete="off"
+                                       class="layui-input" th:field="${teacher.name}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">职称: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="rank" placeholder="请输入职称" autocomplete="off"
+                                       class="layui-input" th:field="${teacher.rank}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">性别: </label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="sex" value="男" title="男" th:checked="${teacher.sex} eq '男'">
+                                <input type="radio" name="sex" value="女" title="女" th:checked="${teacher.sex} eq '女'">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">邮箱: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="email" th:field="${teacher.email}" lay-verify="required"
+                                       lay-reqtext="请输入邮箱号？" placeholder="请输入邮箱号" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手机号: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="phone" th:field="${teacher.phone}" placeholder="请输入手机号"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">答疑<br/>信息: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="answerInfo" th:field="${teacher.answerInfo}"
+                                       placeholder="请输入答疑信息" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">学院: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="institute" th:field="${teacher.institute}" placeholder="请输入学院"
+                                       autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="layer_close()">取消
+                                </button>
+                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form;
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            insertOrUpdate(my_localhost + "/teacher/update", data.field, '修改教师');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>添加留言</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-card-header">
+                    <span style="font-weight: bold;font-size: 18px;">请输入信息</span>
+                </div>
+                <div class="layui-row layui-card-body">
+                    <form class="layui-form" lay-filter="example">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">留言人: </label>
+                            <div class="layui-input-block">
+                                <p th:text="${user.author}"></p>
+                                <input type="hidden" id="author" name="author" th:value="${user.author}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">*标题: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" lay-verify="required" lay-reqtext="请输入标题？"
+                                       placeholder="请输入标题" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <input type="hidden" id="userId" name="userId" th:value="${user.userId}">
+                        <input type="hidden" id="type" name="type" th:value="${user.type}">
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">内容：</label>
+                            <div class="layui-input-block">
+                                <pre>
+                                    <textarea id="content" name="content" lay-verify="required" lay-reqtext="请输入内容？"
+                                          placeholder="请输入内容" class="layui-textarea"></textarea>
+                                </pre>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="layer_close();">取消
+                                </button>
+                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form;
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            insertOrUpdate(my_localhost + "/message/add", data.field, '添加留言');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+
+</html>

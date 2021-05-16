@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>管理员-课程列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    吴彦祖
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">学生管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/student/list">学生列表</a></dd>
+                        <dd><a onclick="layer_show('添加学生','/student/add.html',500,590)">添加学生</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">教师管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/teacher/list" class="layui-this">教师列表</a></dd>
+                        <dd><a onclick="layer_show('添加教师','/teacher/add.html',500,590)">添加教师</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">课程管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/course/list/admin" class="layui-this">课程列表</a></dd>
+                        <dd><a onclick="layer_show('添加课程','/course/add.html',500,320)">添加课程</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/message/list/admin">留言列表</a></dd>
+                        <dd><a onclick="layer_show('添加留言','/message/add.html',500,590)">添加留言</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a>课程管理</a>
+								<a href=""><cite>课程列表</cite></a>
+							</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="demoTable">
+                                模糊条件：
+                                <div class="layui-inline">
+                                    <input class="layui-input" name="condition" id="demoReload" autocomplete="off">
+                                </div>
+                                <button class="layui-btn" data-type="reload">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space15">
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="delAll">批量删除</button>
+                        <button class="layui-btn layui-btn-sm" data-type="reload"
+                                onclick="layer_show('添加课程','/course/add.html',500,320)">添加
+                        </button>
+                        <a href="/giveLessons/download"><button class="layui-btn layui-btn-sm">下载模板</button></a>
+                    </div>
+                </script>
+                <!-- 表格主体 -->
+                <table class="layui-hide" id="test" lay-filter="demo"></table>
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="upload">上传</a>
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="addStu">添加学生</a>
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="findStu">查看学生</a>
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="findTh">归属管理</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/upload.js}"></script>
+<script>
+    layui.use(['table', 'element'], function () {
+        var table = layui.table;
+        var element = layui.element;
+        table.render({
+            elem: '#test',
+            url: my_localhost + '/course/findAll',
+            toolbar: '#toolbarDemo',
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'], //自定义分页布局
+                groups: 5,//只显示 1 个连续页码
+                first: true, //不显示首页
+                last: true, //不显示尾页
+                limit: 10,
+                limits: [5, 10, 20, 30, 50]
+            },
+            request: {
+                pageName: 'pageNum', //页码的参数名称，默认：page
+                limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            },
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.data.code, //解析接口状态
+                    "msg": res.data.msg, //解析提示文本
+                    "count": res.data.count, //解析数据长度
+                    "data": res.data.data //解析数据列表
+                };
+            },
+            id: 'testReload',
+            cols: [[{type: 'checkbox'},
+                {field: 'courseId', width: 60, title: 'ID', sort: true},
+                {field: 'courseNumber', width: 120, title: '课程编号'},
+                {field: 'courseName', width: 240, title: '课程名称'},
+                {field: 'giveId', width: 60, title: '关系ID', hide: true},
+                {field: 'teacherNumber', width: 120, title: '教师编号', sort: true},
+                {field: 'teacherName', title: '教师名', width: 120},
+                {fixed: 'right', title: '操作', width: 390, align: 'center', toolbar: '#barDemo'}]
+            ]
+        });
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除该数据吗？', function (index) {
+                    deleted(my_localhost + "/course/delete/" + data.courseId, '课程');
+                    obj.del();
+                    layer.close(emp);
+                });
+            } else if (obj.event === 'edit') {
+                layer_show("修改课程", my_localhost + "/course/update.html/" + data.courseId, 500, 320);
+            } else if (obj.event === 'findTh') {
+                layer_show("更新课程教师", my_localhost + "/course/updateTh/" + data.courseId, 500, 590);
+            } else if (obj.event === 'findStu') {
+                layer_show("课程学生列表", my_localhost + "/course/studentList.html/" + data.courseId, 570, 590);
+            } else if (obj.event === 'addStu') {
+                layer_show("添加课程学生", my_localhost + "/course/addStudent.html/" + data.courseId, 500, 590);
+            } else if (obj.event === 'upload') {
+                uploadPage(data.giveId);//弹出上传窗口
+            }
+        });
+        //工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event === 'delAll') {//批量删除
+                var arr = [];
+                checkStatus.data.forEach(function (v) {
+                    arr.push(v.courseId)
+                });
+                layer.alert("ids:" + arr);
+            }
+        });
+        //重载
+        var $ = layui.$,
+            active = {
+                reload: function () {
+                    var demoReload = $('#demoReload'); //条件
+                    //执行重载
+                    table.reload('testReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        where: {
+                            condition: demoReload.val()
+                        }
+                    }, 'data');
+                }
+            };
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</html>

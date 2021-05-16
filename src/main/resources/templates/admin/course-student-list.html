@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>管理员-课程学生列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout">
+    <!-- 内容主体区域 -->
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+						<span class="layui-breadcrumb" lay-separator="/">
+						<a href="">首页</a>
+						<a>课程管理</a>
+						<a>课程列表</a>
+						<a href=""><cite>课程学生列表</cite></a>
+						</span>
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="demoTable">
+                            模糊条件：
+                            <div class="layui-inline">
+                                <input class="layui-input" name="condition" id="demoReload"
+                                       autocomplete="off">
+                            </div>
+                            <button class="layui-btn" data-type="reload">搜索</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space15">
+
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-sm" lay-event="delAll">批量删除</button>
+                </div>
+            </script>
+            <!-- 表格主体 -->
+            <input type="hidden" id="courseId" name="courseId" th:value="${gl.courseId}"/>
+            <input type="hidden" id="teacherId" name="teacherId" th:value="${gl.teacherId}" />
+            <table class="layui-table" lay-data="{url:my_localhost +'/course/studentList/'+ document.getElementById('courseId').value,toolbar:'#toolbarDemo', id:'test3'
+						,page: { layout: ['count', 'prev', 'page', 'next', 'limit','refresh', 'skip'],groups: 5 ,first: false,last: false,limit: 10,limits: [5, 10, 20, 30, 50]}
+						,request: {pageName: 'pageNum' ,limitName: 'pageSize'}
+						,parseData: function(res) { return {'code': res.data.code,'msg': res.data.msg, 'count': res.data.count,'data': res.data.data };}}"
+                   lay-filter="test3">
+                <thead>
+                <tr>
+                    <th lay-data="{type:'checkbox'}">ID</th>
+                    <th lay-data="{field:'giveId', width:80, sort: true}">ID</th>
+                    <th lay-data="{field:'studentNumber', width:120, sort: true, edit: 'text'}">学号</th>
+                    <th lay-data="{field:'studentName', width:120, sort: true}">学生姓名</th>
+                    <th lay-data="{fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}">操作
+                    </th>
+                </tr>
+                </thead>
+            </table>
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['table', 'element'], function () {
+        var table = layui.table;
+        var element = layui.element;
+        //监听单元格编辑
+        table.on('edit(test3)', function (obj) {
+            var courseId = $("#courseId").val();
+            var teacherId = $("#teacherId").val();
+            var giveLessons = {"id":obj.data.giveId,"studentId":obj.value,"teacherId":teacherId,"courseId":courseId};
+            insertOrUpdate(my_localhost + "/giveLessons/update/student", giveLessons, '更新课程学生');
+            $(".layui-icon-refresh").click();
+        });
+        //工具栏事件
+        table.on('toolbar(test3)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event === 'delAll') {
+                var arr = checkStatus.data;
+                var ids = [];
+                arr.forEach(function (v) {
+                    ids.push(v.id);
+                });
+                layer.alert("id:" + ids);
+            }
+        });
+        table.on('tool(test3)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除条数据吗？', function (index) {
+
+                    deleted(my_localhost + "/giveLessons/delete/" + data.giveId, '课程学生');
+                    obj.del();
+                    layer.close(index);
+                });
+            }
+        });
+        //重载
+        var $ = layui.$,
+            active = {
+                reload: function () {
+                    var demoReload = $('#demoReload'); //条件
+                    //执行重载
+                    table.reload('test3', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        where: {
+                            condition: demoReload.val()
+                        }
+                    }, 'data');
+                }
+            };
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+</script>
+
+</html>

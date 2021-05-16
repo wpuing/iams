@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生作业详情</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body style="background-color: #F6F6F6; ">
+<h3 style="margin: 20px;display: none;" id="submit-tips">您确定提交作业吗？</h3>
+<div class="layui-side layui-bg-black layui-m-anim-left" style="display: none;margin-top: 50px;">
+    <div class="layui-side-scroll">
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item ">
+                <a class="" href="javascript:;">一、单选题</a>
+                <dl class="layui-nav-child" th:each="single,userStat:${ads.singleChoiceList}">
+                    <dd>
+                        <a th:href="'#dan'+${single.relationId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">二、多选题</a>
+                <dl class="layui-nav-child" th:each="multiple,userStat:${ads.multipleChoiceList}">
+                    <dd>
+                        <a th:href="'#duo'+${multiple.relationId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">三、判断题</a>
+                <dl class="layui-nav-child" th:each="judge,userStat:${ads.judgeTopicList}">
+                    <dd>
+                        <a th:href="'#pan'+${judge.relationId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item ">
+                <a class="" href="javascript:;">四、填空题</a>
+                <dl class="layui-nav-child" th:each="completion,userStat:${ads.completionTopicList}">
+                    <dd>
+                        <a th:href="'#tian'+${completion.relationId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item ">
+                <a class="" href="javascript:;">五、简答题</a>
+                <dl class="layui-nav-child" th:each="subTopic,userStat:${ads.subTopicList}">
+                    <dd>
+                        <a th:href="'#jian'+${subTopic.relationId}">
+                            <span th:text="${userStat.index+1}"></span>
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<blockquote id="head" class="layui-elem-quote layui-fixbar"
+            style="left: 0;width: 100%;top: 0;height: 20px;right: 0;">
+    <i id="question-list" class="layui-icon layui-icon-spread-left"
+       style="margin-right: 15px;cursor: pointer;"></i>
+    <span><a href="">作业：</a> </span>
+    <span><a href="" th:text="${ads.assignment.title}"></a></span>
+    <button type="button" id="submit-btn" class="layui-btn layui-layout-right" style="top: 5px;right: 50px;">提交</button>
+</blockquote>
+<input id="assignmentId" th:value="${ads.assignment.id}" type="hidden"/>
+<input id="studentNumber" value="stu1v0001" type="hidden"/>
+<fieldset class="layui-elem-field" style="margin: 50px 200px 0 200px;">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>一、单选题</legend>
+        <input id="singleSize" th:value="${ads.singleChoiceList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="single,userStat:${ads.singleChoiceList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'dan'+${single.relationId}" th:utext="${single.multipleChoice.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'singleForm'+${userStat.index}" class="layui-form" action="">
+                        <input type="hidden" name="type" th:value="${single.typeId}"/>
+                        <input type="hidden" name="studentResultId" th:value="${single.studentResultId}"/>
+                        <input type="hidden" name="childId" th:value="${single.childId}"/>
+                        <input type="hidden" name="topicId" th:value="${single.topicId}"/>
+                        <div class="layui-form-item" th:each="choice:${single.multipleChoice.choices}">
+                            <div th:if="${single.studentResultId} == null"><!--存在学生答案则显示-->
+                                <input type="radio" name="result"
+                                       th:value="${choice.number}"
+                                       th:title="${choice.number}+'、'+${choice.name}">
+                            </div>
+                            <div th:if="${single.studentResultId} != null">
+                                <input type="radio" name="result"
+                                       th:checked="${#strings.contains(choice.isKey,1)}"
+                                       th:value="${choice.number}"
+                                       th:title="${choice.number}+'、'+${choice.name}">
+                            </div>
+
+
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${single.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>二、多选题</legend>
+        <input id="multipleSize" th:value="${ads.multipleChoiceList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="multiple,userStat:${ads.multipleChoiceList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'duo'+${multiple.relationId}" th:utext="${multiple.multipleChoice.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'multipleForm'+${userStat.index}" th:id="'multipleForm'+${userStat.index}"
+                          class="layui-form" action="">
+                        <input type="hidden" name="type" th:value="${multiple.typeId}"/>
+                        <input type="hidden" name="topicId" th:value="${multiple.topicId}"/>
+                        <input type="hidden" name="studentResultId" th:value="${multiple.studentResultId}"/>
+                        <input type="hidden" name="childId" th:value="${multiple.childId}"/>
+                        <div class="layui-form-item" th:each="choice:${multiple.multipleChoice.choices}">
+                            <div th:if="${multiple.studentResultId} == null">
+                                <input type="checkbox" name="result" lay-skin="primary"
+                                       th:value="${choice.number}"
+                                       th:title="${choice.number}+'、'+${choice.name}">
+                            </div>
+                            <div th:if="${multiple.studentResultId} != null">
+                                <input type="checkbox" name="result" lay-skin="primary"
+                                       th:checked="${#strings.contains(choice.isKey,1)}"
+                                       th:value="${choice.number}"
+                                       th:title="${choice.number}+'、'+${choice.name}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${multiple.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>三、判断题</legend>
+        <input id="judgeSize" th:value="${ads.judgeTopicList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="judge,userStat:${ads.judgeTopicList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'pan'+${judge.relationId}" th:utext="${judge.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'judgeForm'+${userStat.index}" class="layui-form" action="">
+                        <input type="hidden" name="type" th:value="${judge.typeId}"/>
+                        <input type="hidden" name="topicId" th:value="${judge.topicId}"/>
+                        <input type="hidden" name="studentResultId" th:value="${judge.studentResultId}"/>
+                        <input type="hidden" name="childId" th:value="${judge.childId}"/>
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <div th:if="${judge.studentResultId} == null">
+                                    <input type="radio" name="result"
+                                           value="T" title="正确">
+                                    <input type="radio" name="result"
+                                           value="F" title="错误">
+                                </div>
+                                <div th:if="${judge.studentResultId} != null">
+                                    <input type="radio" name="result"
+                                           th:checked="${#strings.contains(judge.result,'T')}"
+                                           value="T" title="正确">
+                                    <input type="radio" name="result"
+                                           th:checked="${#strings.contains(judge.result,'F')}"
+                                           value="F" title="错误">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${judge.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>四、填空题</legend>
+        <input id="completionSize" th:value="${ads.judgeTopicList.size()}" type="hidden"/>
+        <div class="layui-field-box" th:each="completion,userStat:${ads.completionTopicList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'tian'+${completion.relationId}" th:utext="${completion.title}"></div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'completionForm'+${userStat.index}" class="layui-form" action="">
+                        <input type="hidden" name="type" th:value="${completion.typeId}"/>
+                        <input type="hidden" name="topicId" th:value="${completion.topicId}"/>
+                        <input type="hidden" name="studentResultId" th:value="${completion.studentResultId}"/>
+                        <input type="hidden" name="childId" th:value="${completion.childId}"/>
+                        <div class="layui-form-item">
+                            <div th:if="${completion.studentResultId} == null">
+                                <input type="text" name="result" autocomplete="off"
+                                       class="layui-input"
+                                       placeholder="请填空">
+                            </div>
+                            <div th:if="${completion.studentResultId} != null">
+                                <input type="text" name="result" th:value="${completion.result}" autocomplete="off"
+                                       class="layui-input"
+                                       placeholder="请填空">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>备注：</span>
+                            <p th:text="${completion.remark}"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>五、简答题</legend>
+        <input type="hidden" id="stopicSize" th:value="${ads.subTopicList.size()}"/>
+        <div class="layui-field-box" th:each="stopic,userStat:${ads.subTopicList}">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div th:id="'jian'+${stopic.relationId}" th:utext="${stopic.title}"></div>
+                    <div class="layui-form-item">
+                        <span>备注：</span>
+                        <p th:text="${stopic.remark}"></p>
+                    </div>
+                </div>
+                <hr/>
+                <div class="layui-card-body">
+                    <form data-th-lay-filter="'stopicForm'+${userStat.index}" class="layui-form" action="">
+                        <input type="hidden" name="type" th:value="${stopic.typeId}"/>
+                        <input type="hidden" name="topicId" th:value="${stopic.topicId}"/>
+                        <input type="hidden" name="studentResultId" th:value="${stopic.studentResultId}"/>
+                        <input type="hidden" name="childId" th:value="${stopic.childId}"/>
+                        <div class="layui-form-item">
+                            <div th:if="${stopic.studentResultId} == null">
+                                <textarea name="result" th:id="'demo'+${userStat.index}"
+                                      style="display: none;"></textarea>
+                            </div>
+                            <div th:if="${stopic.studentResultId} != null">
+                                <textarea name="result" th:id="'demo'+${userStat.index}" th:utext="${stopic.result}"
+                                      style="display: none;"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+
+</fieldset>
+
+
+<!-- 回到顶部 -->
+<ul class="layui-fixbar" style="margin-right: 15px;">
+    <li id="timer" style="font-size: 8px; background-color: rgb(53, 53, 68); display: list-item;">0:0:0</li>
+    <li class="layui-icon layui-icon-top" lay-type="top"
+        style="font-size: 45px; background-color: rgb(53, 53, 68); display: list-item;"></li>
+</ul>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+
+    //获取多选题
+    function getmultipleData() {
+        var multipleData = [];//总数组
+        var multipleOneData = [];//每个表单的数组
+        var multipleModel = {};
+        var multipleSize = $('#multipleSize').val();//长度
+        for (var i = 0; i < multipleSize; i++) {
+            var type = layui.form.val('multipleForm' + i).type;//题目类型
+            var topicId = layui.form.val('multipleForm' + i).topicId;//题目号
+            var studentResultId = layui.form.val('multipleForm' + i).studentResultId;//学生题目答案关系id
+            var childId = layui.form.val('multipleForm' + i).childId;//答案号
+            console.log("多选题题目号：" + topicId);
+            //根据多选题的个数循环得到每一个表单，遍历选中的复选框
+            $('#multipleForm' + i + ' input[type=checkbox]:checked').each(function (index) {
+                //得到一个复选框的值,放到该表单的复选框数组中
+                multipleOneData[index] = $(this).val();
+            });
+            multipleModel = {
+                "type": type, "topicId": topicId, "result": multipleOneData.join(",")
+                , "studentResultId": studentResultId, "childId": childId
+            };//用,号拼接成字符串
+            multipleData[i] = multipleModel;//放到总的数组中
+            multipleOneData = [];//重置表单复选框数组
+        }
+        return multipleData;
+    }
+
+    //获取单选题、判断题,填空题,主观题
+    function getResultData(name) {
+        var data = [];
+        var size = document.getElementById(name + 'Size').value;
+        var model = {};
+        for (var i = 0; i < size; i++) {
+            model = layui.form.val(name + 'Form' + i);
+            data[i] = {
+                "type": model.type, "topicId": model.topicId, "result": model.result
+                , "studentResultId": model.studentResultId, "childId": model.childId
+            };
+        }
+        return data;
+    }
+
+
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element', 'form', 'layedit', 'layer'], function () {
+        var element = layui.element,
+            form = layui.form,
+            $ = layui.jquery,
+            layedit = layui.layedit,
+            layer = layui.layer;
+
+        //编辑器上传图片，必须在启动器build前面
+        layedit.set({
+            uploadImage: {
+                url: my_localhost + '/assignment/uploadImg/subjective',//接口url
+                type: 'post' //默认post
+            }
+        });
+        var stopicSize = $('#stopicSize').val();//主观题的个数
+        var arrIndex = [];//富文本编辑器的索引
+        for (var i = 0; i < stopicSize; i++) {//循环建立编辑器
+            var index = layedit.build('demo' + i);
+            arrIndex[i] = index;
+        }
+
+        function getStopicData() {//获取所有的编辑器的内容
+            var stopicData = [];
+            var data = {};
+            for (var i = 0; i < stopicSize; i++) {
+                var type = form.val('stopicForm' + i).type;//获取题目id
+                var topicId = form.val('stopicForm' + i).topicId;//获取题目id
+                var studentResultId = form.val('stopicForm' + i).studentResultId;//学生题目答案关系id
+                var childId = form.val('stopicForm' + i).childId;//获取答案id
+                var d = layedit.getContent(arrIndex[i]);//得到每一个富文本编辑器的内容
+                data = {
+                    "type": type, "topicId": topicId, "result": d, "studentResultId": studentResultId
+                    , "childId": childId
+                };
+                stopicData[i] = data;//放到数组
+            }
+            return stopicData;
+        }
+
+        function allTopicResult() {//获取所有的答案和作业号、学号
+            var topicList = [];//答案集合
+            var assignmentId = $("#assignmentId").val();//作业号
+            var studentNumber = $("#studentNumber").val();//学号
+            topicList = topicList.concat(getResultData("single"));//单选题答案
+            topicList = topicList.concat(getmultipleData());//多选题答案
+            topicList = topicList.concat(getResultData("judge"));//判断题答案
+            topicList = topicList.concat(getResultData("completion"));//填空题答案
+            topicList = topicList.concat(getStopicData());//主观题答案
+            var result = {
+                "assignmentId": assignmentId, "studentNumber": studentNumber,
+                "topicAnswerList": JSON.stringify(topicList)
+            };
+            return result;
+        }
+
+        $(document).ready(function () {
+            var secs = 0;//秒数
+            var mins = 0;//分钟
+            var hours = 0;//小时
+            $(".layui-icon-top").click(function () { // 回到顶部
+                if ($('html').scrollTop()) {
+                    $('html').animate({
+                        scrollTop: 0
+                    }, 100); //动画效果
+                    return false;
+                }
+                $('body').animate({
+                    scrollTop: 0
+                }, 100);
+                return false;
+
+            });
+            // 展开或关闭侧边栏
+            $("#question-list").click(function () {
+                if ($(".layui-side").css("display") == "none") {
+                    $(".layui-side").css('display', 'block');
+                    // $("#head").css('margin-left','200px');
+                    $("#question-list").attr("class", "layui-icon layui-icon-shrink-right ");
+                } else {
+                    $(".layui-side").css('display', 'none');
+                    $("#head").css('margin-left', '0');
+                    $("#question-list").attr("class", "layui-icon layui-icon-spread-left");
+                }
+            });
+            // 提交作业
+            $("#submit-btn").click(function () {
+                layer.open({
+                    type: 1,
+                    // area:['500px','600px'],
+                    title: '提交作业',
+                    content: $("#submit-tips"),
+                    btn: ['确认', '取消'],
+                    btn1: function (index, layero) {
+                        var result = allTopicResult();
+                        var allResult = {
+                            "assignmentId": result.assignmentId, "studentNumber": result.studentNumber,
+                            "time": getTime(), "topicAnswerList": result.topicAnswerList
+                        };
+                        $.post(my_localhost + "/assignment/submitResult", allResult, function (data) {
+                            //回调回来的数据data
+                            if (data.code == '200') {
+                                layer.alert('提交成功', function (index) {
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    parent.location.reload(); //刷新父页面，注意一定要在关闭当前iframe层之前执行刷新
+                                    parent.layer.close(index); //再执行关闭
+                                });
+                            } else {
+                                layer.alert('响应码：' + data.code + " ,消息：" + data.message);
+                            }
+                        });
+                    },
+                    btn2: function (index, layero) {
+                        layer.closeAll();
+                    },
+                    cancel: function (layero, index) {
+                        layer.closeAll();
+                    }
+                });
+            });
+            var timer = setInterval(countTime, 1000);
+
+            function countTime() {
+                secs += 1;
+                if (secs >= 60) {
+                    mins += 1;
+                    secs = 0;
+                }
+                if (mins >= 60) {
+                    hours += 1;
+                    mins = 0;
+                }
+                if (hours >= 24) {
+                    hours = 0;
+                }
+                document.getElementById("timer").innerHTML = hours + " : " + mins + " : " + secs;
+            }
+
+            function getTime() {
+                return (hours * 60 + mins * 60 + secs);
+            }
+        });
+    });
+</script>
+</html>

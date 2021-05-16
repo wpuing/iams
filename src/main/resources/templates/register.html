@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>注册</title>
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" type="text/css" th:href="@{/static/lib/layui/css/layui.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/lib/step-lay/step.css}"/>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding-top: 40px;">
+            <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                <div carousel-item>
+                    <div>
+                        <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">选择角色:</label>
+                                <div class="layui-input-block">
+                                    <select id="role" name="role" lay-verify="required">
+                                        <option value="1" selected>学生</option>
+                                        <option value="2">教师</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formStep">
+                                        &emsp;下一步&emsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <form class="layui-form" lay-filter="userInfo" style="margin: 0 auto;max-width: 460px;padding-top: 40px;text-align: center;">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">编号:</label>
+                                <div class="layui-input-block">
+                                    <input name="number" type="text" placeholder="请填写编号" class="layui-input" lay-verify="required" />
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">姓名:</label>
+                                <div class="layui-input-block">
+                                    <input name="name" type="text" placeholder="请填写姓名" class="layui-input" lay-verify="required" />
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码:</label>
+                                <div class="layui-input-block">
+                                    <input id="password1" name="password1" type="password" placeholder="请填写密码" class="layui-input"  lay-verify="required" />
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">再次确认:</label>
+                                <div class="layui-input-block">
+                                    <input id="password2" name="password2" type="password" placeholder="请填写密码" class="layui-input"  lay-verify="required" />
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">邮箱地址:</label>
+                                <div class="layui-input-block">
+                                    <input id="email" name="email" type="text" placeholder="请填写邮箱地址" class="layui-input" lay-verify="email" required />
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btn-primary pre">上一步</button>
+                                    <button class="layui-btn" lay-submit lay-filter="formStep2">
+                                        &emsp;填写完成&emsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <div style="text-align: center;margin-top: 50px;">
+                            <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;text-align: center;">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">输入验证码:</label>
+                                    <div class="layui-input-block">
+                                        <input name="code" type="text" placeholder="请填写验证码" class="layui-input" lay-verify="required" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="button" class="layui-btn layui-btn-primary pre">上一步</button>
+                                        <button class="layui-btn" lay-submit lay-filter="formStep3">确认</button>
+                                        <input id="send" type="button" class="layui-btn layui-btn-primary" onclick="sendEmail()" value="发送验证码" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/step-lay/step.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.config({
+        base:'./static/lib/step-lay/'
+    }).use([ 'form', 'step','layer'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , layer = layui.layer
+            , step = layui.step;
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '630px',
+            height: '400px',
+            stepItems: [{
+                title: '选择角色'
+            }, {
+                title: '填写信息'
+            }, {
+                title: '邮箱验证'
+            }]
+        });
+        //第一级
+        form.on('submit(formStep)', function (data) {
+            step.next('#stepForm');//跳转下一个
+            return false;
+        });
+        //第二级
+        form.on('submit(formStep2)', function (data) {
+            //alert("数据："+JSON.stringify(data));
+            var pwd1 = $("#password1").val();
+            var pwd2 = $("#password2").val();
+            if(pwd1!=pwd2){
+                layer.alert("两次密码不一致，请再次确认！");
+                return false;
+            }
+            step.next('#stepForm');//跳转下一个
+            return false;
+        });
+        // 校验邮箱验证码
+        form.on('submit(formStep3)', function (data) {
+            var emailCode = data.field.code;//验证码
+            var userInfo = form.val('userInfo');//表单数据
+            var role = $("#role").val();//角色
+            var personalInfo={"number":userInfo.number,"name":userInfo.name
+                ,"password":userInfo.password1,"email":userInfo.email,"roleId":role};
+            alert("表单数据："+JSON.stringify(personalInfo));
+            $.post(my_localhost+'/check?code='+emailCode, function (data) {
+                if(data.code=='200'){//验证成功
+                    if(role==1){//学生
+                        insertOrUpdate(my_localhost + "/student/add", personalInfo, '注册学生');
+                    }
+                    if(role==2){//教师
+                        insertOrUpdate(my_localhost + "/teacher/add", personalInfo, '注册教师');
+                    }
+                }else{
+                    layui.layer.alert(data.message);
+                }
+            });
+            return false;
+        });
+        $('.pre').click(function () {
+            step.pre('#stepForm');
+        });
+
+        //邮箱验证成功则关闭
+
+        $('.next').click(function () { //下一个
+            step.next('#stepForm');
+        });
+    });
+    //获取邮箱验证码
+    var countdown = 60;
+    function sendEmail() {
+        var email = $("#email").val();
+        var obj = $("#send");
+        $.post(my_localhost+'/email/send?email='+email, function (data) {
+            if(data.code=='200'){//发送注册信息成功
+                setTime(obj); //发送验证码
+            }else{
+                layui.layer.alert(data.message);
+            }
+        });
+
+    }
+    function setTime(obj) { //发送验证码倒计时
+        if (countdown == 0) {
+            obj.attr('disabled', false);
+            obj.val("免费获取验证码");
+            countdown = 60;
+            return;
+        } else {
+            obj.attr('disabled', true);
+            obj.val("重新发送(" + countdown + ")");
+            countdown--;
+        }
+        setTimeout(function() {
+            setTime(obj)
+        }, 1000)
+    }
+</script>
+</html>
+

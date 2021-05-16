@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>添加 菜单||权限</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">个人资料</li>
+                        <li>更新个人资料</li>
+                        <li>修改密码</li>
+                        <li>修改邮箱</li>
+                    </ul>
+                    <div class="layui-tab-content" style="height: 440px;">
+                        <div class="layui-tab-item layui-show">
+                            <hr>
+                            <p><span> 编号：</span><span th:text="${employee.number}"></span></p>
+                            <p><span> 姓名：</span><span th:text="${employee.name}"></span></p>
+                            <p><span> 邮箱：</span><span th:text="${employee.email}"></span></p>
+                            <p><span> 手机：</span><span th:text="${employee.phone}"></span></p>
+                            <p><span> 角色：</span><span th:text="${employee.roleName}"></span></p>
+                            <p><span> 性别：</span><span th:text="${employee.sex}"></span></p>
+                            <p><span> 注册时间：</span><span th:text="${#dates.format(employee.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+<!--                            <p><span> 学号：</span><span class="number">1700300821</span></p>-->
+<!--                            <p><span> 姓名：</span><span class="name">陆明福</span></p>-->
+<!--                            <p><span> 邮箱：</span><span class="email">1452154455@qq.com</span></p>-->
+<!--                            <p><span> 手机：</span><span class="phone">13538745456</span></p>-->
+<!--                            <p><span> 学院：</span><span class="institute">计算机与信息安全学院</span></p>-->
+<!--                            <p><span> 专业：</span><span class="professional">计算机科学与技术</span></p>-->
+<!--                            <p><span> 性别：</span><span class="sex">男</span></p>-->
+<!--                            <p><span> 年龄：</span><span class="age">22</span></p>-->
+<!--                            <p><span> 注册时间：</span><span class="date">2020-12-25 13:45:12</span></p>-->
+                        </div>
+                        <div class="layui-tab-item">
+                            <form class="layui-form" style="padding-top: 30px;">
+                                <input type="hidden" name="id" th:value="${employee.id}">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">编号:</label>
+                                    <div class="layui-input-block">
+                                        <input name="number" type="text" th:value="${employee.number}" placeholder="请填写编号" class="layui-input" lay-verify="required" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">姓名:</label>
+                                    <div class="layui-input-block">
+                                        <input name="name" type="text" th:value="${employee.name}" placeholder="请填写姓名" class="layui-input" lay-verify="required" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">邮箱:</label>
+                                    <div class="layui-input-block">
+                                        <input name="email" type="text" th:value="${employee.email}"  class="layui-input" lay-verify="email" disabled required />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">性别:</label>
+                                    <div class="layui-input-block">
+                                        <input type="radio" name="sex" value="男" title="男" th:checked="${employee.sex} eq '男'">
+                                        <input type="radio" name="sex" value="女" title="女" th:checked="${employee.sex} eq '女'">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">手机号:</label>
+                                    <div class="layui-input-block">
+                                        <input  name="phone" type="text" th:value="${employee.phone}" placeholder="请填写手机号" class="layui-input"  />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="button" class="layui-btn layui-btn-primary" onclick="layer_close()">取消</button>
+                                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="updateInfo">
+                                            &emsp;确认修改&emsp;
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-tab-item">
+                            <form class="layui-form" style="text-align: center;padding-top: 30px;">
+                                <input type="hidden" name="id" th:value="${employee.id}">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">请输入:</label>
+                                    <div class="layui-input-block">
+                                        <input name="password1" type="password" placeholder="请输入密码" class="layui-input" lay-verify="required" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">再确认:</label>
+                                    <div class="layui-input-block">
+                                        <input name="password2" type="password" placeholder="再次确认密码" class="layui-input" lay-verify="required" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="button" class="layui-btn layui-btn-primary">取消</button>
+                                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="updatePassword">
+                                            &emsp;确认修改&emsp;
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-tab-item">
+                            <form class="layui-form" style="text-align: center;padding-top: 30px;">
+                                <input type="hidden" name="id" th:value="${employee.id}">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">Email:</label>
+                                    <div class="layui-input-block">
+                                        <input id="newEmail" name="email" type="text" placeholder="请输入邮箱地址" class="layui-input" lay-verify="email" required />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label" style="text-align: center;">验证码:</label>
+                                    <div class="layui-input-block">
+                                        <input id="emailCode" name="emailCode" type="text" placeholder="验证码" class="layui-input" lay-verify="required" />
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="button" class="layui-btn layui-btn-primary">取消</button>
+                                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="updateEmail">
+                                            &emsp;确认修改&emsp;
+                                        </button>
+                                        <input id="send" type="button" class="layui-btn layui-btn-primary" onclick="sendEmail()" value="发送验证码" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form', 'element'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.jquery,
+            element = layui.element;
+        //监听提交
+        form.on('submit(updateInfo)', function (data) {//修改个人信息
+            insertOrUpdate(my_localhost + "/employee/update", data.field, '修改个人信息');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        form.on('submit(updatePassword)', function (data) {//修改密码
+            var id=data.field.id;
+            var pwd1=data.field.password1;
+            var pwd2=data.field.password2;
+            if(pwd1!=pwd2){
+                layer.alert("两次密码不一致！！！！！");
+                return false;
+            }
+            insertOrUpdate(my_localhost + "/employee/updatePassword?id="+id+"&password="+pwd1,null, '修改密码');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        form.on('submit(updateEmail)', function (data) {
+            var id=data.field.id;
+            var emailCode=data.field.emailCode;
+            var email=data.field.email;
+            layer.alert("验证数据："+id+", "+emailCode+" , "+email);
+            //校验验证码
+            $.post(my_localhost+'/check?code='+emailCode, function (data) {
+                if(data.code=='200'){//验证成功
+                    insertOrUpdate(my_localhost + "/employee/updateEmail?id="+id+"&email="+email, null, '修改邮箱');
+                }else{
+                    layui.layer.alert(data.message);
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    var countdown = 60;
+    function sendEmail() {
+        var newEmail = $("#newEmail").val();
+        if(newEmail==''){
+            layui.layer.alert("邮箱为空");
+            return false;
+        }
+        var obj = $("#send");
+        setTime(obj);
+        $.post(my_localhost+'/email/send?email='+newEmail, function (data) {
+            if(data.code=='200'){//发送注册信息成功
+                setTime(obj); //发送验证码
+            }else{
+                layui.layer.alert(data.message);
+            }
+        });
+    }
+    function setTime(obj) { //发送验证码倒计时
+        if (countdown == 0) {
+            obj.attr('disabled', false);
+            obj.val("免费获取验证码");
+            countdown = 60;
+            return;
+        } else {
+            obj.attr('disabled', true);
+            obj.val("重新发送(" + countdown + ")");
+            countdown--;
+        }
+        setTimeout(function() {
+            setTime(obj)
+        }, 1000)
+    }
+</script>
+
+</html>

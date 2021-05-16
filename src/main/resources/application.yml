@@ -8,14 +8,15 @@ spring:
     url: jdbc:mysql://localhost:3306/iams_dev?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=true
     username: root
     password: root
+
   mvc:
     ## 静态资源
-    static-path-pattern: /stataic/**
+    static-path-pattern: /static/**
   resources:
     ## 文件映射
     static-locations:
       - classpath:/static/
-      - file:D:\CodeSpace\Java\Test\image\
+      - file:D:\CodeSpace\Java\Test\file\iams\
   ## 邮件配置
   mail:
     host: smtp.qq.com
@@ -25,6 +26,7 @@ spring:
 
 ## 自定义邮箱
 mail.fromMail.addr: 865230476@qq.com
+
 
 #  thymeleaf:
 #    prefix: classpath:/templates/
@@ -47,6 +49,8 @@ mybatis-plus:
 ## 逻辑删除注解  @TableLogic 注解，用于触发拦截器，删除时不会对其进行删除，执行的是更新操作，把deleted字段改为了deleted=1，表示已经删除
 ## @TableField(fill = FieldFill.INSERT)，当添加时，会自动给该属性赋值，具体赋值什么就要看我们在配置类中的配置了，这里默认添加deleted=0
 ##
+
+##模板下载：http://localhost:8488/giveLessons/download
 
 ## login
 

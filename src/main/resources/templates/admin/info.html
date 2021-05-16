@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>添加 菜单||权限</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">个人资料</li>
+                        <li>更新个人资料</li>
+                        <li>修改密码</li>
+                        <li>修改邮箱</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <h1>个人信息</h1>
+                        </div>
+                        <div class="layui-tab-item">
+                            <h1>修改个人信息</h1>
+                        </div>
+                        <div class="layui-tab-item">
+                            <h1>修改密码</h1>
+                        </div>
+                        <div class="layui-tab-item">
+                            <h1>修改邮箱</h1>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form', 'element'], function () {
+        var layer = layui.layer,
+            form = layui.form,
+            $ = layui.jquery,
+            element = layui.element;
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            //insertOrUpdate(my_localhost + "/permission/add", data.field, '添加菜单');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        form.on('submit(demo2)', function (data) {
+            //insertOrUpdate(my_localhost + "/permission/add", data.field, '添加权限');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+
+</html>

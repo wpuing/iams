@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>修改主观题</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- 内容主体区域 -->
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a>作业管理</a>
+								<a href=""><cite>修改主观题</cite></a>
+							</span>
+                </div>
+                <div class="layui-card-body">
+                    <button type="button" class="layui-btn" id="addM">修改到作业</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <form class="layui-form" lay-filter="example">
+            <input type="hidden" id="id" name="id" th:value="${sTopic.id}"/>
+            <input type="hidden" id="assignmentId" name="assignmentId" th:value="${sTopic.assignmentId}"/>
+            <input type="hidden" id="turnout" name="turnout" th:value="${sTopic.turnout}"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="text-align: center">*题目: </label>
+                <div class="layui-input-block">
+                    <textarea id="title" name="title" th:utext="${sTopic.title}" style="display: none;"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="text-align: center">*分值: </label>
+                <div class="layui-input-block">
+                    <input type="text" name="score" th:value="${sTopic.score}" lay-verify="required" lay-reqtext="请输入分值？"
+                           placeholder="请输入分值" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="text-align: center">备注: </label>
+                <div class="layui-input-block">
+                    <textarea name="remark" th:text="${sTopic.remark}" placeholder="请输入内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label" style="text-align: center">*教师答案: </label>
+                <div class="layui-input-block">
+                    <textarea id="result" name="result" th:utext="${sTopic.result}" style="display: none;"></textarea>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    // 获得数据
+
+    //JavaScript代码区域
+    layui.use(['layedit','element', 'form', 'util'], function () {
+        var $ = layui.$;
+        var form = layui.form;
+        var layer = layui.layer;
+        var element = layui.element;
+        var util = layui.util;
+        var layedit = layui.layedit;
+
+        //编辑器上传图片，必须在启动器build前面
+        layedit.set({
+            uploadImage: {
+                url: my_localhost+'/assignment/uploadImg/subjective' ,//接口url
+                type: 'post' //默认post
+            }
+        });
+        //富文本编辑器
+        var i = layedit.build('result', {}); //建立编辑器
+        var j = layedit.build('title', {}); //建立编辑器
+
+        //表单取值
+        $('#addM').on('click', function () {
+            var formData = form.val('example');//获得表单数据
+            var result = layedit.getContent(i);
+            var title = layedit.getContent(j);
+            if(result=='' || title==''){
+                layer.alert("必要参数为空！！！");
+                return;
+            }
+            var st = {
+                "id": formData.id, "title": title,'result':result
+                ,'turnout':formData.turnout,'assignmentId':formData.assignmentId,
+                "score": formData.score, "remark": formData.remark
+            };//组合选择题信息
+            //alert("数据：" + JSON.stringify(st));
+            insertOrUpdate(my_localhost + "/subjectiveTopic/update", st, '修改主观题');
+        });
+
+    });
+</script>
+
+</html>

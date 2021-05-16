@@ -1,0 +1,11 @@
+.ck {
+    width: 18px;
+    height: 18px;
+    margin-top: 5px;
+}
+
+.ckAll {
+    position: absolute;
+    bottom: 13px;
+    left: 40px;
+}

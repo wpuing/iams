@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>管理员-学生列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <span th:text="${session.userInfo.name}"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a th:href="@{/logout}">退出登录</a></li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">学生管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/student/list" class="layui-this">学生列表</a></dd>
+                        <dd><a onclick="layer_show('添加学生','/student/add.html',500,590)">添加学生</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">教师管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/teacher/list">教师列表</a></dd>
+                        <dd><a onclick="layer_show('添加教师','/teacher/add.html',500,590)">添加教师</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">课程管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/course/list/admin">课程列表</a></dd>
+                        <dd><a onclick="layer_show('添加教师','/course/add.html',500,590)">添加课程</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/message/list/admin">留言列表</a></dd>
+                        <dd><a onclick="layer_show('添加留言','/message/add.html',500,590)">添加留言</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a>学生管理</a>
+								<a href=""><cite>学生列表</cite></a>
+							</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="demoTable">
+                                模糊条件：
+                                <div class="layui-inline">
+                                    <input class="layui-input" name="condition" id="demoReload" autocomplete="off">
+                                </div>
+                                开始日期：
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="startTime" id="startTime"
+                                           placeholder="yyyy-MM-dd">
+                                </div>
+                                结束日期：
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="endTime" id="endTime"
+                                           placeholder="yyyy-MM-dd">
+                                </div>
+                                <button class="layui-btn" data-type="reload">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space15">
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="delAll">批量删除</button>
+                        <button class="layui-btn layui-btn-sm" data-type="reload"
+                                onclick="layer_show('添加学生','/student/add.html',500,590)">添加
+                        </button>
+                    </div>
+                </script>
+                <!-- 表格主体 -->
+                <table class="layui-hide" id="test" lay-filter="demo"></table>
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script type="text/html" id="createDateTpl">
+    {{layui.util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm:ss')}}
+</script>
+<script>
+    layui.use(['table','element','laydate'], function () {
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var element = layui.element;
+
+        //日期常规用法
+        laydate.render({
+            elem: '#startTime'
+        });
+        laydate.render({
+            elem: '#endTime'
+        });
+
+        table.render({
+            elem: '#test',
+            url: my_localhost + '/student/findAll',
+            toolbar: '#toolbarDemo',
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count', 'prev', 'page', 'next', 'limit','skip'], //自定义分页布局
+                groups: 5,//只显示 1 个连续页码
+                first: true, //不显示首页
+                last: true, //不显示尾页
+                limit: 10,
+                limits:[5, 10, 20, 30, 50]
+            },
+            request: {
+                pageName: 'pageNum', //页码的参数名称，默认：page
+                limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            },
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.data.code, //解析接口状态
+                    "msg": res.data.msg, //解析提示文本
+                    "count": res.data.count, //解析数据长度
+                    "data": res.data.data //解析数据列表
+                };
+            },
+            id: 'testReload',
+            cols: [[{type: 'checkbox'},
+                {field: 'id', width: 80, title: 'ID', sort: true},
+                {field: 'number', width: 100, title: '编号'},
+                {field: 'name', width: 100, title: '姓名'},
+                {field: 'age', width: 100, title: '年龄',sort:true},
+                {field: 'sex', width: 80, title: '性别', sort: true},
+                {field: 'email', title: '邮箱', width: 150},
+                {field: 'phone', width: 120, title: '手机号', sort: true},
+                {field: 'professional', width: 170, title: '专业'},
+                {field: 'institute', width: 160, title: '学院'},
+                {field: 'createTime', width: 150, templet: "#createDateTpl", title: '创建日期'},
+                {fixed: 'right', title: '操作', width: 178, align: 'center', toolbar: '#barDemo'}]
+            ]
+        });
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除该数据吗？', function (index) {
+                    deleted(my_localhost + "/student/delete/" + data.id, '学生');
+                    obj.del();
+                    layer.close(emp);
+                });
+            } else if (obj.event === 'edit') {
+                layer_show("修改学生", my_localhost + "/student/update.html/" + data.id, 500, 590);
+            }
+        });
+
+        //工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event === 'delAll') {//批量删除
+                var arr = [];
+                checkStatus.data.forEach(function(v){ arr.push(v.is)});
+                layer.alert("id:" + arr);
+            }
+
+        });
+
+        //重载
+        var $ = layui.$,
+            active = {
+                reload: function () {
+                    var demoReload = $('#demoReload'); //条件
+                    var startTime = $('#startTime'); //条件
+                    var endTime = $('#endTime'); //条件
+                    //执行重载
+                    table.reload('testReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        where: {
+                            condition: demoReload.val(),
+                            startTime: startTime.val(),
+                            endTime: endTime.val()
+                        }
+                    }, 'data');
+                }
+            };
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+</script>
+</html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iams.core.mapper.CourseMapper">
+
+    <sql id="course_dto">
+        SELECT
+        c.id courseId,c.number courseNumber,c.name courseName,
+        g.id giveId,
+        t.number teacherNumber,t.name teacherName
+        FROM
+        course c LEFT JOIN give_lessons g ON c.number=g.course_id
+        LEFT JOIN teacher t ON g.teacher_id=t.number ${ew.customSqlSegment}
+    </sql>
+
+    <select id="selectCourseDtoPage" resultType="com.iams.core.dto.CourseDto">
+        <include refid="course_dto"></include>
+    </select>
+
+
+    <select id="selectCourseDtoPageByStudentId" resultType="com.iams.core.dto.CourseDto">
+        SELECT * FROM
+		    (SELECT
+			    c.id courseId,c.number courseNumber,c.name courseName,
+			    g.id giveId,
+			    t.number teacherNumber,t.name teacherName
+		    FROM
+			    course c
+			LEFT JOIN   give_lessons g ON c.number=g.course_id
+		    LEFT JOIN teacher t ON g.teacher_id=t.number
+		    WHERE g.student_id=#{studentId}) sc
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="findDto" resultType="com.iams.core.dto.CourseDto">
+        <include refid="course_dto"></include>
+    </select>
+
+    <select id="selCourseAndStuPage" resultType="com.iams.core.dto.CourseStudentDto">
+  	    SELECT
+        g.id giveId,g.student_id studentNumber,
+        s.name studentName
+        FROM
+        give_lessons g
+        LEFT JOIN student s ON g.student_id=s.number ${ew.customSqlSegment}
+    </select>
+</mapper>

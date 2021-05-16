@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生课程列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    吴彦祖
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a th:onclick="layer_show('基本资料','/student/info?id=1','800','560');">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出登录</a></li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <input type="hidden" id="studentId" value="stu1v0001">
+        <input type="hidden" id="total" th:value="${total}">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a th:href="@{'/course/list/studentPage?studentId=stu1v0001'}" class="layui-this">课程列表</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a th:href="@{'/message/list/student'}">留言列表</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('添加留言','/message/add.html/student/2','700','590');">添加留言</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a th:href="@{'/message/list/student'}"><cite>课程列表</cite></a>
+							</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="demoTable">
+                                <button onclick="layer_show('添加课程','/course/student/add.html?studentId=stu1v0001',500,250)"
+                                        class="layui-btn layui-btn-normal">添加课程</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-row layui-col-space15" style="background-color: #F2F2F2;padding: 0px;">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-row layui-col-space15" style="padding: 0px;">
+                            <div class="layui-card-body" style="height: 115px">
+                                <!--内容-->
+                                <div class="layui-row layui-col-space15" id="demo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['element', 'layer', 'flow'], function () {
+        var $ = layui.jquery;
+        var flow = layui.flow;
+        var layer = layui.layer;
+        var element = layui.element;
+
+        flow.load({
+            elem: '#demo', //指定列表容器
+            isAuto: false,
+            end: '已经到底了，没有了哦！',
+            done: function (page, next) { //到达临界点（默认滚动触发），触发下一页
+                var lis = [];
+                var pageSize = 3;
+                var studentId = $("#studentId").val();
+                //以jQuery的Ajax请求为例，请求下一页数据（注意：page是从2开始返回）
+                $.get(my_localhost + '/course/studentCourseList?studentId=' + studentId +
+                    '&pageSize=' + pageSize + '&pageNum=' + page,
+                    function (res) {
+                        //假设你的列表返回在data集合中
+                        layui.each(res.data.data, function (index, item) {
+                            lis.push(
+                                '<div class="layui-col-md4" style="background-color: #FFFFFF;">' +
+                                '<div class="layui-panel" style="background-color: #FBFBFF;">' +
+                                '<div class="layui-col-md11" style="width: 99%;height: 115px;">' +
+                                '<div class="layui-col-md12">' +
+                                '<div class="layui-card" style="background-color: #90d7ec;color: #fffffb;">' +
+                                '<div class="layui-card-header">' +
+                                '<i class="layui-icon layui-icon-list" style="font-size: 20px; color: #FFFFFF;"></i> &nbsp;' +
+                                '<span style="font-weight: bold;font-size: 20px;color: #fffffb;">' + item.courseName + '</span>' +
+                                '</div>' +
+                                '<div class="layui-card-body" style="font-size: 15px;">' +
+                                ' <p>' +
+                                '<span>课程号：</span><span>' + item.courseNumber + '</span>' +
+                                ' <sapn style="float: right;"><span>教师：</span><span>' + item.teacherName + '</span></sapn>' +
+                                '</p>' +
+                                ' <div>' +
+                                '<a href="/assignment//list/student?courseNumber='+item.courseNumber+'&studentNumber=stu1v0001" style="margin-left: 17px;" title="查看作业列表"><button type="button" ' +
+                                'class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs" style="margin-left: 75px;">查看作业</button></a>' +
+                                '<button type="button" class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs" ' +
+                                'onclick="del(\'/giveLessons/delete/\','+item.giveId+'\,\'学生课程\''+')" '+
+                                ' style="margin-left: 75px;">删除课程</button>' +
+                                '</div></div></div></div></div></div></div>'
+                            )
+                        });
+                        //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                        //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                        next(lis.join(''), page < Math.ceil(res.data.count / pageSize));
+                    });
+            }
+        });
+
+    });
+    function del(url,id,title) {
+        layui.layer.confirm('真的删除该数据吗？', function (index) {
+            deleted(my_localhost + url + id, title);
+            layui.layer.close(index);
+        });
+    }
+</script>
+</html>

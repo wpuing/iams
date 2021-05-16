@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>答疑列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+    <style type="text/css">
+        .user_name {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">
+                <a th:href="@{'/assignment/findById.html/'+${assignmentId}}">返回作业</a>
+            </li>
+
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    吴彦祖
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退出登录</a></li>
+        </ul>
+    </div>
+    <div>
+        <!-- 内容主体区域 -->
+
+        <div class="layui-row">
+            <div class="layui-col-md1">
+                <div class="grid-demo grid-demo-bg1">
+                    <!-- 左部 -->
+                    &nbsp;
+                </div>
+            </div>
+            <div class="layui-col-md10">
+                <!-- 主体-->
+                <div class="layui-bg-gray">
+                    <div class="layui-row layui-col-space15" style="margin-top: 5px;">
+                        <div class="layui-col-sm1">
+                            &nbsp;
+                        </div>
+                        <div class="layui-col-sm10">
+                            <div class="layui-panel">
+                                <div class="layui-card">
+                                    <div class="layui-card-header">
+                                        <div>
+                                            <h1 style="float: left">答疑信息</h1>
+                                            <button style="float: right;margin-top: 5px" type="button"
+                                                    class=" layui-btn-sm layui-btn layui-btn-primary layui-border-green"
+                                                    th:onclick="addAnswer('吴彦祖啊',[[${assignmentId}]],0);">
+                                                添加
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="layui-card-body" th:each="answer,userStat:${answerList}">
+                                        <div class="layui-panel">
+                                            <div class="layui-card">
+                                                <div class="layui-card-header">
+                                                    <span th:text="${userStat.count}"></span>、
+                                                    <span>回复时间：<span th:text="${#dates.format(answer.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                                    <div style="float: right;">
+                                                        <button type="button"
+                                                                class="layui-btn layui-btn-sm layui-btn-normal"
+                                                                th:onclick="addAnswer('吴彦祖啊',[[${assignmentId}]],[[${answer.id}]]);"
+                                                        >回复</button>
+                                                        <button type="button"
+                                                                class="layui-btn layui-btn-sm layui-btn-warm"
+                                                                th:onclick="layer_show('修改答疑信息','/answer/update.html/'+[[${answer.id}]],'700','380');"
+                                                        >修改</button>
+                                                        <button type="button"
+                                                                class="layui-btn layui-btn-sm layui-btn-danger"
+                                                                th:onclick="delAnswer([[${answer.id}]]);"
+                                                        >删除</button>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-card-body">
+                                                    <!-- 第一级评论 -->
+                                                    <div class="layui-row layui-col-space15">
+                                                        <!-- 作者 -->
+                                                        <div class="layui-col-md2">
+                                                            <div class="layui-panel">
+                                                                <div class="user_name" th:text="${answer.author}">
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- 作者评论 -->
+                                                        <div class="layui-col-md10">
+                                                            <div class="layui-panel">
+                                                                <div th:utext="${answer.content}">
+                                                                    <!--第一级评论内容-->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    <!-- 回复 -->
+                                                    <div class="layui-collapse" lay-filter="test">
+                                                        <div class="layui-colla-item">
+                                                            <h2 class="layui-colla-title">
+                                                                查看回复<span>(</span><span th:text="${answer.kids.size()}"></span><span>)</span>
+                                                            </h2>
+                                                            <div class="layui-colla-content" th:each="kid:${answer.kids}">
+                                                                <div class="layui-card">
+                                                                    <div class="layui-card-header">
+                                                                        <span>回复时间：<span th:text="${#dates.format(kid.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                                                        <div style="float: right;">
+                                                                            <button type="button"
+                                                                                    class="layui-btn layui-btn-sm layui-btn-warm"
+                                                                                    th:onclick="layer_show('修改答疑信息','/answer/update.html/'+[[${kid.id}]],'700','380');"
+                                                                            >修改</button>
+                                                                            <button type="button"
+                                                                                    class="layui-btn layui-btn-sm layui-btn-danger"
+                                                                                    th:onclick="delAnswer([[${kid.id}]]);"
+                                                                            >删除</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="layui-card-body">
+                                                                        <div class="layui-row layui-col-space15">
+                                                                            <div class="layui-col-md2">
+                                                                                <div class="layui-panel">
+                                                                                    <div class="user_name" th:text="${kid.author}">
+                                                                                        <!--回复的人员名-->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!-- 作者评论 -->
+                                                                            <div class="layui-col-md10">
+                                                                                <div class="layui-panel">
+                                                                                    <div th:utext="${kid.content}">
+                                                                                        <!--  回复的内容    -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <hr />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- 分隔线 -->
+                                                    <hr />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm1">
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md1">
+                <div class="grid-demo">
+                    <!-- 右部 -->
+                    &nbsp;
+                </div>
+            </div>
+    </div>
+</div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['layedit', 'element', 'laydate', 'util'], function () {
+        var layedit = layui.layedit;
+        var laydate = layui.laydate;
+        var element = layui.element;
+        var util = layui.util;
+        //返回顶部
+        util.fixbar({
+            top: true,
+            css: {
+                right: 15,
+                bottom: 35
+            },
+            bgcolor: '#2a96ff !important;display:block;',
+            showHeight: 100,
+            click: function (type) {
+                if (type === 'top') {
+                    $('.main-body').animate({ //主要代码
+                        scrollTop: 0
+                    }, 200);
+                }
+            }
+        });
+        //编辑器上传图片，必须在启动器build前面
+        layedit.set({
+            uploadImage: {
+                url: '' //接口url
+                ,
+                type: '' //默认post
+            }
+        });
+        //富文本编辑器
+        layedit.build('demo', {}); //建立编辑器
+
+        //获得作业id
+        var assId = $("#id").val();
+
+
+
+    });
+    function addAnswer(author,assId,parentId) {
+         layer_show("添加答疑", my_localhost + "/answer/add.html?name="
+             + author+"&assignmentId="+assId+"&parentId="+parentId, 700, 380);
+    }
+    function delAnswer(id) {
+        deleted(my_localhost + "/answer/delete/" + id, '答疑');
+    }
+
+</script>
+
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>超级管理员-员工列表</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 智能作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <span th:if="session.userInfo!=null"><span th:text="${session.userInfo?.name}">未认证</span></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a th:onclick="layer_show('基本资料','/employee/info?id=1&roleName=superAdmin','800','560');">
+                            基本资料
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a th:href="@{/logout}">退出登录</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">员工管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/employee/list" class="layui-this">员工列表</a></dd>
+                        <dd><a onclick="layer_show('添加员工','/employee/add.html',500,590)">添加员工</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">权限管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/permission/list">权限列表</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+							<span class="layui-breadcrumb" lay-separator="/">
+								<a href="">首页</a>
+								<a>员工管理</a>
+								<a href=""><cite>员工列表</cite></a>
+							</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="demoTable">
+                                模糊条件：
+                                <div class="layui-inline">
+                                    <input class="layui-input" name="condition" id="demoReload" autocomplete="off">
+                                </div>
+                                开始日期：
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="startTime" id="startTime"
+                                           placeholder="yyyy-MM-dd">
+                                </div>
+                                结束日期：
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="endTime" id="endTime"
+                                           placeholder="yyyy-MM-dd">
+                                </div>
+                                <button class="layui-btn" data-type="reload">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row layui-col-space15">
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="delAll">批量删除</button>
+                        <button class="layui-btn layui-btn-sm" data-type="reload"
+                                onclick="layer_show('添加员工','/employee/add.html',500,590)">添加
+                        </button>
+                    </div>
+                </script>
+                <!-- 表格主体 -->
+                <table class="layui-hide" id="test" lay-filter="demo"></table>
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script type="text/html" id="createDateTpl">
+    {{layui.util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm:ss')}}
+</script>
+<script>
+    layui.use(['table','element','laydate'], function () {
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var element = layui.element;
+        //日期组件
+        laydate.render({
+            elem: '#startTime'
+        });
+        laydate.render({
+            elem: '#endTime'
+        });
+
+        table.render({
+            elem: '#test',
+            url: my_localhost + '/employee/findAll',
+            toolbar: '#toolbarDemo',
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count', 'prev', 'page', 'next','limit','skip'], //自定义分页布局
+                groups: 5,//只显示 1 个连续页码
+                first: true, //不显示首页
+                last: true, //不显示尾页
+                limit: 10,
+                limits:[5, 10, 20, 30, 50]
+            },
+            request: {
+                pageName: 'pageNum', //页码的参数名称，默认：page
+                limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            },
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "code": res.data.code, //解析接口状态
+                    "msg": res.data.msg, //解析提示文本
+                    "count": res.data.count, //解析数据长度
+                    "data": res.data.data //解析数据列表
+                };
+            },
+            id: 'testReload',
+            cols: [[{type: 'checkbox'},
+                {field: 'id', width: 80, title: 'ID', sort: true},
+                {field: 'number', width: 100, title: '编号'},
+                {field: 'name', width: 100, title: '姓名'},
+                {field: 'sex', width: 80, title: '性别', sort: true},
+                {field: 'email', title: '邮箱', width: 150},
+                {field: 'phone', width: 120, title: '手机号', sort: true},
+                {field: 'roleName', width: 120, title: '角色', sort: true},
+                {field: 'createTime', width: 150, templet: "#createDateTpl", title: '创建日期'},
+                {fixed: 'right', title: '操作', width: 178, align: 'center', toolbar: '#barDemo'}]
+            ]
+        });
+        table.on('tool(demo)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除该数据吗？', function (index) {
+                    deleted(my_localhost + "/employee/delete/" + data.id, '员工');
+                    obj.del();
+                    layer.close(emp);
+                });
+            } else if (obj.event === 'edit') {
+                layer_show("修改员工", my_localhost + "/employee/update.html/" + data.id, 500, 590);
+            }
+        });
+
+        //工具栏事件
+        table.on('toolbar(demo)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event === 'delAll') {//批量删除
+                var arr = [];
+                checkStatus.data.forEach(function(v){ arr.push(v.id)});
+                layer.alert("id:" + arr);
+            }
+
+        });
+        //重载
+        var $ = layui.$,
+            active = {
+                reload: function () {
+                    //执行重载
+                    table.reload('testReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        where: {//获得查询条件值
+                            condition: $('#demoReload').val(),
+                            startTime:  $('#startTime').val(),
+                            endTime: $('#endTime').val()
+                        }
+                    }, 'data');
+                }
+            };
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+</script>
+
+
+</html>
