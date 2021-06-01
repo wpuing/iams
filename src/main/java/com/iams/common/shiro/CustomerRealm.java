@@ -90,16 +90,16 @@ public class CustomerRealm extends AuthorizingRealm {
      * 认证
      */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken)
+            throws AuthenticationException {
         String principal = (String) authenticationToken.getPrincipal();//得到用户信息
         this.userInfo = (UserInfo) getUserInfo(principal, true);
-        //存入session
         this.originalInfo = getUserInfo(principal, false);
-        this.setSession("userInfo",getUserInfo(principal,false));
-        System.out.println("认证用户数据 userInfo：" + this.userInfo);
-        System.out.println("认证用户数据 originalInfo：" + this.originalInfo);
+        this.setSession("userInfo",getUserInfo(principal,false)); //存入session
         if (!ObjectUtils.isEmpty(this.originalInfo)) {//判断
-            return new SimpleAuthenticationInfo(this.userInfo.getUsername(), this.userInfo.getPassword(), ByteSource.Util.bytes(this.userInfo.getSalt()), this.getName());
+            return new SimpleAuthenticationInfo(this.userInfo.getUsername(),
+                    this.userInfo.getPassword(), ByteSource.Util.bytes(this.userInfo.getSalt()),
+                    this.getName());
         }
         return null;
     }

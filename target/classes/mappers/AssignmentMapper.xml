@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iams.core.mapper.AssignmentMapper">
+
+    <resultMap id="studentAssignmentDtoResult" type="com.iams.core.dto.student.StudentTaskDto" autoMapping="true">
+        <id column="stId" property="id"></id>
+        <id column="assignment_id" property="assignmentId"></id>
+        <id column="is_answer" property="isAnswer"></id>
+        <id column="start_quiz_time" property="startQuizTime"></id>
+        <id column="total_quiz_time" property="totalQuizTime"></id>
+        <association property="assignment" javaType="com.iams.core.pojo.Assignment">
+            <id column="teacher_id" property="teacherId"></id>
+            <id column="title" property="title"></id>
+            <id column="description" property="description"></id>
+            <id column="create_time" property="createTime"></id>
+            <id column="turnout" property="turnout"></id>
+            <id column="file" property="file"></id>
+            <id column="limiting_time" property="limitingTime"></id>
+        </association>
+    </resultMap>
+
+    <sql id="otopic_dto">
+        SELECT
+            a.id relationId,a.assignment_id assignmentId,a.type_id typeId,a.topic_id topicId,
+            ot.title,ot.score,ot.result,ot.turnout,ot.remark
+         FROM  assignment_topic a LEFT JOIN objective_topic ot ON a.topic_id=ot.id
+            ${ew.customSqlSegment}
+    </sql>
+    <sql id="stopic_dto">
+       SELECT
+            a.id relationId,a.assignment_id assignmentId,a.type_id typeId,a.topic_id topicId,
+            st.title,st.score,st.result,st.turnout,st.remark
+        FROM  assignment_topic a LEFT JOIN subjective_topic st ON a.topic_id=st.id
+            ${ew.customSqlSegment}
+    </sql>
+
+    <select id="selectAllOTopic" resultType="com.iams.core.dto.assginment.TopicDto">
+        <include refid="otopic_dto"></include>
+    </select>
+
+    <select id="selectAllSTopic" resultType="com.iams.core.dto.assginment.TopicDto">
+        <include refid="stopic_dto"></include>
+    </select>
+
+    <select id="findScore" parameterType="java.util.Map" resultType="Float">
+        SELECT
+        <if test="type != null and type == 'sub'">
+            sum(ot.score) score
+            FROM assignment_topic a
+            INNER JOIN objective_topic ot ON a.topic_id=ot.id
+            WHERE a.assignment_id=#{assignmentId} and a.type_id&lt;#{typeId}
+        </if>
+        <if test="type != null and type == 'obj'">
+            sum(st.score) score
+            FROM assignment_topic a
+            INNER JOIN subjective_topic st ON a.topic_id=st.id
+            WHERE a.assignment_id=#{assignmentId} and a.type_id=#{typeId}
+        </if>
+    </select>
+
+    <select id="findStudentAssignment" resultMap="studentAssignmentDtoResult">
+        SELECT
+            st.id stId,st.assignment_id,st.is_answer,st.start_quiz_time,st.total_quiz_time,
+            a.teacher_id,a.title,a.description,a.create_time,a.turnout,a.file,a.limiting_time
+        FROM student_task st
+        INNER JOIN assignment a
+        ON st.assignment_id=a.id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

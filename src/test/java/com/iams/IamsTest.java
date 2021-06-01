@@ -8,14 +8,13 @@ import com.iams.common.constant.IamsConstants;
 import com.iams.common.util.IamsUtils;
 import com.iams.common.util.LayResult;
 import com.iams.common.util.PythonUtil;
+import com.iams.common.util.Utils;
 import com.iams.core.dto.AnswerDto;
 import com.iams.core.dto.CourseDto;
-import com.iams.core.dto.assginment.ChoiceDtoImpl;
-import com.iams.core.dto.assginment.ChoiceDto;
-import com.iams.core.dto.assginment.TopicDto;
-import com.iams.core.dto.assginment.TopicDtoImpl;
+import com.iams.core.dto.assginment.*;
 import com.iams.core.dto.mcq.Choice;
 import com.iams.core.dto.scores.AssignmentScoresDetails;
+import com.iams.core.dto.scores.StudentScoresDetails;
 import com.iams.core.dto.scores.StudentScoresDto;
 import com.iams.core.dto.student.*;
 import com.iams.core.mapper.*;
@@ -27,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,10 +72,179 @@ public class IamsTest {
     @Autowired
     private StudentResultMapper studentResultMapper;
 
+    @Autowired
+    private StudentResultService studentResultService;
 
     @Autowired
     private UpdateResultService updateResultService;
 
+    @Autowired
+    private ScoresService scoresService;
+
+    @Autowired
+    private StudentTaskMapper studentTaskMapper;
+
+    @Autowired
+    private AssignmentScoresService assignmentScoresService;
+
+    @Autowired
+    private AssignmentTopicMapper assignmentTopicMapper;
+
+
+    @Test
+    public void t37() {//查询该作业的题目的平均分
+        List<String> studentEmails = studentTaskMapper.selectStudentEmails(2);
+        studentEmails.forEach(System.out::println);
+    }
+
+    @Test
+    public void t36() {//查询该作业的详细得分情况
+        AssignmentParameters parameters = assignmentScoresService.find(2);
+        System.out.println("作业号："+parameters.getAssignmentId());
+        System.out.println("平均分："+parameters.getAverage());
+        System.out.println("最高分："+parameters.getTopScore());
+        System.out.println("最低分："+parameters.getLowestScore());
+        System.out.println("应答人数："+parameters.getPopulation());
+        List<TopicParameters> list = parameters.getParametersList();
+        list.forEach(System.out::println);
+    }
+    @Test
+    public void t35() {//查询该作业的题目的平均分
+        System.out.println("平均分："+getAverage(Arrays.asList(2.2f,2.2f,2.2f), 6));
+
+    }
+
+    @Test
+    public void t34() {//查询该作业所有题目2
+        List<TopicParameters> parametersList = new ArrayList<>();
+        for (int i = 4;i<6;i++){
+            Map<String,Object> map = new HashMap<>();
+            map.put("typeId",i);
+            map.put("assignmentId",2);
+            System.out.println("类型： "+i);
+            List<TopicParameters> list = assignmentTopicMapper.findTopicDetails(map);
+            parametersList.addAll(list);
+        }
+        parametersList.forEach(System.out::println);
+
+    }
+    @Test
+    public void t33() {//查询该作业所有题目
+        Map<String,Object> map = new HashMap<>();
+        map.put("typeId",5);
+        map.put("assignmentId",2);
+        List<TopicParameters> list = assignmentTopicMapper.findTopicDetails(map);
+        //List<AssignmentTopic>  list= assignmentTopicService.find(new AssignmentTopic().setAssignmentId(2));
+        list.forEach(System.out::println);
+
+    }
+    @Test
+    public void t32() {//查询该作业的题目的最大最小值
+        System.out.println("最小值："+getMaxOrMin(Arrays.asList(1.2f,2.3f,5.9f), true));
+        System.out.println("最大值："+getMaxOrMin(Arrays.asList(1.2f,2.3f,5.9f), false));
+
+    }
+
+    /**
+     * 提取最大最小值
+     * @param list 分数集合
+     * @return
+     */
+    private Float getAverage(List<Float> list, Integer number) {
+        Float totalScore = new Float(0.0f);
+        if (!CollectionUtils.isEmpty(list)) {
+            if(!Utils.isEmpty(number)){
+                number = list.size();
+            }
+            for (Float score:list){
+                totalScore+=score;
+            }
+            return  totalScore / number;
+        }
+        return totalScore;
+    }
+
+    private Float getMaxOrMin(List<Float> list,boolean flag) {
+        Float max = 0.0f;//将数组的第一个元素赋给max
+        Float min = 0.0f;//将数组的第一个元素赋给min
+        if (!CollectionUtils.isEmpty(list)) {
+            max = list.get(0);
+            min = list.get(0);
+            for (int i = 1; i < list.size(); i++) {//从数组的第二个元素开始赋值，依次比较
+                if (list.get(i)> max) {//如果list[i]大于最大值，就将list[i]赋给最大值
+                    max = list.get(i);
+                }
+                if (list.get(i) < min) {//如果list[i]小于最小值，就将list[i]赋给最小值
+                    min = list.get(i);
+                }
+            }
+        }
+        if(flag) return max;
+        return min;
+    }
+
+    @Test
+    public void t31() {//查询该作业的题目的最大最小值
+//        Map<String,Object> map = new HashMap<>();
+//        //Integer assignmentId,Integer typeId,Integer topicId
+//        map.put("assignmentId",2);
+//        map.put("typeId",2);
+//        map.put("topicId",7);
+//        List<Map<String, Object>> list = studentResultMapper.selectMaxAndMin(map);
+//        System.out.println("最小值："+BaseService.getData(list, "min"));
+//        System.out.println("最大值："+BaseService.getData(list, "max"));
+
+    }
+    @Test
+    public void t30() {//查询该作业的总分
+//        Float sumScore = scoresMapper.selectSumScore(2);
+//        System.out.println("值："+sumScore);
+
+    }
+    @Test
+    public void t29() {//查询该作业的最大值和最小值
+//        List<Map<String, Object>> list = scoresMapper.selectMaxAndMin(2);
+//        System.out.println("最大最小值：");
+//        if(!CollectionUtils.isEmpty(list)){
+//            list.forEach(map->{
+//                Set<Map.Entry<String, Object>> entrySet = map.entrySet();
+//                entrySet.forEach(System.out::println);
+//            });
+//        }
+//        System.out.println("----------------");
+//        Object data = BaseService.getData(list, "min");
+//        System.out.println("值："+data);
+
+    }
+
+    @Test
+    public void t28() {//查询该学生该作业的所有题目成绩
+        List<StudentScoresDto> scoresDtoList = new ArrayList<>();
+        for(Integer typeId:IamsConstants.TOPIC_TYPE){
+            List<StudentScoresDto> list = studentResultService.selectScoresByNumber(typeId, 2, "stu1v0002");
+            scoresDtoList.addAll(list);
+        }
+        System.out.println("---------------------------------------------------");
+        scoresDtoList.forEach(System.out::println);
+        System.out.println("---------------------------------------------------");
+        Float score  = new Float(0.0);
+        for (StudentScoresDto studentScoresDto:scoresDtoList){
+            if(Utils.isEmpty(studentScoresDto.getTeacherScores())){
+                score+=studentScoresDto.getTeacherScores();
+            }else {
+                score+=studentScoresDto.getSysScores();
+            }
+        }
+        System.out.println("最后分数： "+score);
+    }
+
+    @Test
+    public void t27() {//查询该学生的作业成绩明细
+        List<StudentScoresDetails> details =
+                scoresService.selectScoresByNumber(2, "stu1v0001");
+        details.forEach(System.out::println);
+
+    }
     @Test
     public void t26() {//查询该学生的作业成绩详情2
         AssignmentScoresDetails details = updateResultService.findScores(2, "stu1v0001");

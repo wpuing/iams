@@ -23,6 +23,13 @@ public interface StudentTaskService {
      */
     List<StudentTask> find(Integer assignmentId);
 
+    /**
+     * 查询该作业的所有学生邮箱
+     * @param assignmentId
+     * @return
+     */
+    List<String> findEmails(Integer assignmentId);
+
     int insert(StudentTask studentTask);
 
     /**

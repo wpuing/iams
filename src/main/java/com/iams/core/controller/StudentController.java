@@ -6,7 +6,9 @@ import com.iams.common.util.Result;
 import com.iams.common.util.ResultGenerator;
 import com.iams.common.util.Utils;
 import com.iams.core.dto.StudentDto;
+import com.iams.core.mapper.StudentMapper;
 import com.iams.core.pojo.Student;
+import com.iams.core.service.BaseService;
 import com.iams.core.service.GiveLessonsService;
 import com.iams.core.service.StudentService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -37,6 +39,9 @@ public class StudentController {
 
     @Autowired
     private GiveLessonsService giveLessonsService;
+
+    @Autowired
+    private StudentMapper studentMapper;
 
     @RequestMapping("/list")
     @RequiresPermissions("student:list:page")
@@ -136,6 +141,15 @@ public class StudentController {
     public Result delete(@PathVariable("id") Integer id) {
         if (studentService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
+        }
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping("/deleteByIds/{ids}")
+    @ResponseBody
+    public Result delete(@PathVariable("ids") String ids) {
+        if(BaseService.deleteByIds(ids,studentMapper)<=0){
+            return ResultGenerator.genFailResult("删除失败！"+ids);
         }
         return ResultGenerator.genSuccessResult();
     }

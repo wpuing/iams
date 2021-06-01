@@ -38,6 +38,10 @@ public class ChoiceScoresDto {
         return this;
     }
 
+    public ChoiceScoresDto() {
+        if (studentScoresDto == null) studentScoresDto = new StudentScoresDto();
+    }
+
     @Override
     public String toString() {
         return "ChoiceScoresDto{" +

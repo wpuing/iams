@@ -53,20 +53,21 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public LayResult find(String condition, String status, String type,Integer userId,String startTime, String endTime, Integer pageNum, Integer pageSize) {
+        System.out.println("查询留言信息的角色："+type);
         BaseService.checkPage(pageNum,pageSize);//检查分页参数
         LambdaQueryWrapper<Message> wrapper = Wrappers.<Message>lambdaQuery();
         Page<Message> page = new Page<>(pageNum,pageSize,true);
         BaseService.dateRange(wrapper,startTime,endTime);//时间
+        if(Utils.isEmpty(type)){
+            wrapper.eq(Message::getType,type);
+        }
         if(Utils.isEmpty(condition)){
-            wrapper.like(Message::getTitle,condition)
+            wrapper.and(w->w.like(Message::getTitle,condition)
                     .or()
-                    .like(Message::getContent,condition);
+                    .like(Message::getContent,condition));
         }
         if(Utils.isEmpty(status)){
             wrapper.eq(Message::getStatus,status);
-        }
-        if(Utils.isEmpty(type)){
-            wrapper.eq(Message::getType,type);
         }
         if(Utils.isEmpty(userId)){
             wrapper.eq(Message::getUserId,userId);

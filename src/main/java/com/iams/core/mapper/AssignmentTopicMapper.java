@@ -1,8 +1,12 @@
 package com.iams.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.iams.core.dto.assginment.TopicParameters;
 import com.iams.core.pojo.AssignmentTopic;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -14,5 +18,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AssignmentTopicMapper extends BaseMapper<AssignmentTopic> {
+
+    List<TopicParameters> findTopicDetails(Map<String, Object> paramsMap);
 
 }

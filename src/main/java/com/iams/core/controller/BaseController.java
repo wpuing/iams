@@ -8,10 +8,7 @@ import com.iams.common.util.Result;
 import com.iams.common.util.ResultGenerator;
 import com.iams.common.util.Utils;
 import com.iams.core.dto.UserInfo;
-import com.iams.core.pojo.RoleEnum;
 import com.iams.core.service.MailService;
-import com.iams.core.service.StudentService;
-import com.iams.core.service.TeacherService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -47,12 +44,6 @@ public class BaseController {
     private DefaultKaptcha captchaProducer;
 
     @Autowired
-    private StudentService studentService;
-
-    @Autowired
-    private TeacherService teacherService;
-
-    @Autowired
     private MailService mailService;
 
     /**
@@ -63,6 +54,28 @@ public class BaseController {
     @RequestMapping("/login.html")
     public String loginPage() {
         return "login";
+    }
+
+    /**
+     * 登录页面
+     *
+     * @return
+     */
+    @RequestMapping("/index.html")
+    public String index(String role) {
+        if (role.equals("student")) {
+            return "student/index";
+        }
+        if (role.equals("teacher")) {
+            return "teacher/index";
+        }
+        if (role.equals("admin")) {
+            return "admin/index";
+        }
+        if (role.equals("superAdmin")) {
+            return "superAdmin/index";
+        }
+        return "404";
     }
 
     /**
@@ -86,25 +99,15 @@ public class BaseController {
     @RequestMapping("/login")
     public Result login(@Valid UserInfo userInfo, HttpSession session) {
         Subject subject = SecurityUtils.getSubject();
-        try {
-            //toLowerCase() 统一转小写比较是否一致
-            if (userInfo.getCaptcha().toLowerCase().equals(((String) session.getAttribute("verifyCode")).toLowerCase())) {
+        try {//toLowerCase() 统一转小写比较是否一致
+            if(session.getAttribute("verifyCode")==null){
+                return ResultGenerator.genFailResult("验证码失效，请刷新页面 ！");
+            }
+            if (userInfo.getCaptcha().toLowerCase()
+                    .equals(((String) session.getAttribute("verifyCode")).toLowerCase())) {
                 String username = JSON.toJSONString(userInfo);
                 subject.login(new UsernamePasswordToken(username, userInfo.getPassword()));
-                System.out.println("是否拥有 - student:list:page - 权限：" + subject.isPermitted("student:list:page"));
-                System.out.println("认证状态：" + subject.isAuthenticated());
-                if (userInfo.getRole().equals("student")) {
-                    return ResultGenerator.genSuccessResult("/message/list/student");
-                }
-                if (userInfo.getRole().equals("teacher")) {
-                    return ResultGenerator.genSuccessResult("/message/list/teacher");
-                }
-                if (userInfo.getRole().equals("admin")) {
-                    return ResultGenerator.genSuccessResult("/student/list");
-                }
-                if (userInfo.getRole().equals("superAdmin")) {
-                    return ResultGenerator.genSuccessResult("/employee/list");
-                }
+                return ResultGenerator.genSuccessResult("登录成功！");
             } else {
                 return ResultGenerator.genFailResult("验证码错误！");
             }
@@ -124,7 +127,6 @@ public class BaseController {
             System.out.println("登录失败次数过多！");
             return ResultGenerator.genFailResult("登录失败次数过多！");
         }
-        return ResultGenerator.genFailResult("系统异常！！！！！");
     }
 
 
@@ -145,7 +147,7 @@ public class BaseController {
 
     /**
      * 校验验证码
-     *
+     * @param code 用户输入的验证码
      * @return
      */
     @RequestMapping("/check")
@@ -203,19 +205,15 @@ public class BaseController {
         responseOutputStream.close();
     }
 
-    private Object findUserInfoByRole(Integer id, Integer roleId) {
-        if (RoleEnum.getRole(roleId).getName().equals("学生")) {
-            return studentService.find(id);
-        }
-        if (RoleEnum.getRole(roleId).getName().equals("教师")) {
-            return teacherService.find(id);
-        }
-        return null;
-    }
-
+    /**
+     * 发送验证码
+     * @param email 邮箱
+     * @param randomId 随机ID
+     * @return
+     */
     private int sendEmail(String email, String randomId) {
         String title = "网络作业管理系统发来一份验证码套餐，请查收~";
-        String context = "请验证您的邮箱，该验证码验证码只有30分钟有效哦，验证码：" + randomId;
+        String context = "请验证您的邮箱，该验证码只有30分钟有效哦，验证码：" + randomId;
         return mailService.sendSimpleMail(email, title, context);
     }
 

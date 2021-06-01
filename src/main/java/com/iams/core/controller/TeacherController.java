@@ -6,7 +6,9 @@ import com.iams.common.util.Result;
 import com.iams.common.util.ResultGenerator;
 import com.iams.common.util.Utils;
 import com.iams.core.dto.TeacherDto;
+import com.iams.core.mapper.TeacherMapper;
 import com.iams.core.pojo.Teacher;
+import com.iams.core.service.BaseService;
 import com.iams.core.service.GiveLessonsService;
 import com.iams.core.service.TeacherService;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +38,9 @@ public class TeacherController {
 
     @Autowired
     private GiveLessonsService giveLessonsService;
+
+    @Autowired
+    private TeacherMapper teacherMapper;
 
     @RequestMapping("/list")
     public String teacher() {
@@ -134,6 +139,15 @@ public class TeacherController {
     public Result delete(@PathVariable("id") Integer id) {
         if (teacherService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
+        }
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping("/deleteByIds/{ids}")
+    @ResponseBody
+    public Result delete(@PathVariable("ids") String ids) {
+        if(BaseService.deleteByIds(ids,teacherMapper)<=0){
+            return ResultGenerator.genFailResult("删除失败！"+ids);
         }
         return ResultGenerator.genSuccessResult();
     }

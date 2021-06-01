@@ -5,8 +5,9 @@ import com.iams.common.constant.IamsConstants;
 import com.iams.common.exception.ParameterException;
 import com.iams.common.util.*;
 import com.iams.core.dto.GiveLessonsDto;
+import com.iams.core.mapper.GiveLessonsMapper;
 import com.iams.core.pojo.GiveLessons;
-import com.iams.core.service.CourseService;
+import com.iams.core.service.BaseService;
 import com.iams.core.service.GiveLessonsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,7 @@ public class GiveLessonsController {
     private GiveLessonsService giveLessonsService;
 
     @Autowired
-    private CourseService courseService;
+    private GiveLessonsMapper giveLessonsMapper;
 
     /**
      * 上传模板解析
@@ -145,6 +146,15 @@ public class GiveLessonsController {
     @RequestMapping("/delete/{id}")
     public Result delete(@PathVariable("id") Integer id) {
         return del(id);
+    }
+
+    @RequestMapping("/deleteByIds/{ids}")
+    @ResponseBody
+    public Result delete(@PathVariable("ids") String ids) {
+        if(BaseService.deleteByIds(ids,giveLessonsMapper)<=0){
+            return ResultGenerator.genFailResult("删除失败！"+ids);
+        }
+        return ResultGenerator.genSuccessResult();
     }
 
     /**

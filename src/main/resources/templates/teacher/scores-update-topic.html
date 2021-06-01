@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>修改题目成绩</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-card-header" style="font-weight: bold;font-size: 18px;">
+                    <span>修改</span>
+                    <span th:if="${details.typeId==1}">单选题</span>
+                    <span th:if="${details.typeId==2}">多选题</span>
+                    <span th:if="${details.typeId==3}">判断题</span>
+                    <span th:if="${details.typeId==4}">填空题</span>
+                    <span th:if="${details.typeId==5}">主观题</span>
+                </div>
+                <div class="layui-row layui-card-body">
+                    <form class="layui-form" lay-filter="example" style="text-align: center;">
+                        <input type="hidden" name="topicId" th:value="${details.topicId}"/>
+                        <input type="hidden" name="typeId" th:value="${details.typeId}"/>
+                        <input type="hidden" name="studentResultId" th:value="${details.studentResultId}"/>
+                        <input type="hidden" name="resultId" th:value="${details.resultId}"/>
+                        <input type="hidden" name="assignmentId" th:value="${assignmentId}"/>
+                        <input type="hidden" name="studentNumber" th:value="${studentNumber}"/>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"><sapn></sapn>题目: </label>
+                            <div class="layui-input-block">
+                                <input type="text" th:value="${details.index}" name="id"disabled="" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 100px"><sapn></sapn>系统评分: </label>
+                            <div class="layui-input-block">
+                                <input type="text" th:value="${details.sysScores}" name="sysScores"disabled="" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 100px"><sapn></sapn>教师评分: </label>
+                            <div class="layui-input-block">
+                                <input type="text" th:value="${details.teacherScores}" name="teacherScores" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="layer_close()">取消
+                                </button>
+                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form;
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            //layer.alert("数据："+JSON.stringify(data.field))
+            insertOrUpdate(my_localhost + "/scores/updateTopicScore", data.field, '修改成绩信息');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</html>

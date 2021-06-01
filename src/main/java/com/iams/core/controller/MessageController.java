@@ -6,7 +6,9 @@ import com.iams.common.util.Result;
 import com.iams.common.util.ResultGenerator;
 import com.iams.common.util.Utils;
 import com.iams.core.dto.MessageReply;
+import com.iams.core.mapper.MessageMapper;
 import com.iams.core.pojo.Message;
+import com.iams.core.service.BaseService;
 import com.iams.core.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,6 +33,9 @@ public class MessageController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     @RequestMapping("/add.html/{role}/{id}")
     public String add(@PathVariable("role") String role,@PathVariable("id")Integer id, Model model){
@@ -125,5 +130,13 @@ public class MessageController {
         return ResultGenerator.genSuccessResult();
     }
 
+    @RequestMapping("/deleteByIds/{ids}")
+    @ResponseBody
+    public Result delete(@PathVariable("ids") String ids) {
+        if(BaseService.deleteByIds(ids,messageMapper)<=0){
+            return ResultGenerator.genFailResult("删除失败！"+ids);
+        }
+        return ResultGenerator.genSuccessResult();
+    }
 
 }

@@ -119,6 +119,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public int insert(Permission permission) {
+        if(permission.getType().equals("menu")){
+            permission.setParentId(0);
+        }
         permission.setId(null);
         permission.setDeleted(IamsConstants.DELETED);
         check(permission);

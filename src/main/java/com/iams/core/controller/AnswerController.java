@@ -57,8 +57,7 @@ public class AnswerController {
         if(!Utils.isEmpty(id)){
             return "404";
         }
-        //查询该作业的所有答疑信息
-        model.addAttribute("answerList",answerService.findByTopicId(id));
+        model.addAttribute("answerList",answerService.findByTopicId(id));   //查询该作业的所有答疑信息
         model.addAttribute("assignmentId",id);
         return "answer-info";
     }

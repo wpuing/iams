@@ -54,11 +54,10 @@ public class EmployeeController {
             return "404";
         }
         EmployeeDto employeeDto = employeeService.find(id);
+        model.addAttribute("employee",employeeDto);
         if(roleName.equals("admin")){
-            //model.addAttribute("","");
             return "/admin/info";
         }
-        model.addAttribute("employee",employeeDto);
         return "/superAdmin/info";
     }
 

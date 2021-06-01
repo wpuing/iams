@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iams.core.mapper.PermissionMapper">
+    <resultMap id="rolePermissionResult" type="com.iams.core.dto.PermissionBo" autoMapping="true">
+        <id column="id" property="id"></id>
+        <id column="rpId" property="rolePermissionId"></id>
+        <id column="name" property="name"></id>
+        <id column="type" property="type"></id>
+        <id column="url" property="url"></id>
+        <id column="per_code" property="perCode"></id>
+        <id column="parent_id" property="parentId"></id>
+        <id column="sort" property="sort"></id>
+    </resultMap>
+
+<!--    <resultMap id="rolePermissionByRoleIdResult" type="com.iams.core.dto.tree.MenuResult" autoMapping="true">-->
+<!--        <id column="rpId" property="id"></id>-->
+<!--        <id column="pName" property="title"></id>-->
+<!--        <id column="pId" property="permissionId"></id>-->
+<!--        <id column="pParentId" property="parentId"></id>-->
+<!--        <id column="pType" property="type"></id>-->
+<!--        <collection property="children" javaType="java.util.ArrayList"-->
+<!--                    ofType="com.iams.core.dto.tree.Children">-->
+<!--            <id column="rpId1" property="id"></id>-->
+<!--            <id column="pName1" property="title"></id>-->
+<!--            <id column="pId1" property="permissionId"></id>-->
+<!--            <id column="pParentId1" property="parentId"></id>-->
+<!--            <id column="pType1" property="type"></id>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+    <sql id="permission_dto">
+      SELECT rp.id rpId,p.id,p.name,p.type,p.url,p.per_code,p.parent_id,p.sort
+      FROM role_permission rp
+      INNER JOIN
+            permission p
+      ON rp.permission_id=p.id
+        ${ew.customSqlSegment}
+    </sql>
+
+    <select id="findRolePermissionInfo" resultMap="rolePermissionResult">
+        <include refid="permission_dto"></include>
+    </select>
+
+<!--    <select id="findRolePermissionByRoleId" resultMap="rolePermissionByRoleIdResult" parameterType="java.lang.Integer">-->
+<!--        SELECT m.rpId,m.pId,m.pParentId,m.pName,m.pType,k.rpId1,k.pId1,k.pParentId1,k.pName1,k.pType1-->
+<!--        FROM-->
+<!--          (SELECT rp.id rpId,rp.role_id rpRId,p.id pId,p.name pName,p.type pType,p.parent_id pParentId-->
+<!--          FROM role_permission  rp-->
+<!--          INNER JOIN permission p-->
+<!--          ON rp.permission_id=p.id-->
+<!--            WHERE p.type='menu' AND p.deleted=0) m-->
+<!--        LEFT JOIN-->
+<!--          (SELECT rp1.id rpId1,rp1.role_id rpRId1,p1.id pId1,p1.name pName1,p1.type pType1,p1.parent_id pParentId1-->
+<!--          FROM role_permission  rp1-->
+<!--          INNER JOIN permission p1-->
+<!--          ON rp1.permission_id=p1.id-->
+<!--            WHERE p1.type='permission' AND p1.deleted=0) k-->
+<!--        ON m.pId=k.pParentId1-->
+<!--        WHERE rpRId=#{roleId}-->
+<!--    </select>-->
+
+</mapper>

@@ -60,10 +60,14 @@ public class TeacherDto implements Serializable {
      * 创建日期
      */
     private Date createTime;
+    /**
+     * 角色id
+     */
+    private Integer roleId;
 
     @Override
     public String toString() {
-        return "TeacherVo{" +
+        return "TeacherDto{" +
                 "id=" + id +
                 ", number='" + number + '\'' +
                 ", rank='" + rank + '\'' +
@@ -74,6 +78,7 @@ public class TeacherDto implements Serializable {
                 ", answerInfo='" + answerInfo + '\'' +
                 ", institute='" + institute + '\'' +
                 ", createTime=" + createTime +
+                ", roleId=" + roleId +
                 '}';
     }
 
@@ -155,5 +160,13 @@ public class TeacherDto implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Integer getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
     }
 }

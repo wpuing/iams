@@ -40,6 +40,10 @@ public class TopicScoresDto implements Serializable {
         return this;
     }
 
+    public TopicScoresDto() {
+        if (studentScoresDto == null) studentScoresDto = new StudentScoresDto();
+    }
+
     @Override
     public String toString() {
         return "TopicScoresDto{" +

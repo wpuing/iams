@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生成绩明细</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- 内容主体区域 -->
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb" lay-separator="/">
+                        <a href="/index.html?role=teacher">首页</a>
+                        <a>作业管理</a>
+                        <a href="#"><cite>学生学号列表</cite></a>
+                    </span>
+                </div>
+                <div class="layui-card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card" th:each="detail:${details}">
+                <div class="layui-card-body">
+                    <div class="layui-card-body">
+                        <div style="float: left;">
+                            <h2 th:if="${detail.typeId==1}">单选题</h2>
+                            <h2 th:if="${detail.typeId==2}">多选题</h2>
+                            <h2 th:if="${detail.typeId==3}">判断题</h2>
+                            <h2 th:if="${detail.typeId==4}">填空题</h2>
+                            <h2 th:if="${detail.typeId==5}">主观题</h2>
+                        </div>
+                        <button th:onclick="layer_show('修改题目成绩','/scores/updateTopicScore.html'
+                        +'?assignmentId=[[${assignmentId}]]&topicId=[[${detail.topicId}]]&typeId=[[${detail.typeId}]]&studentNumber='+[[${studentNumber}]],'800','375');"
+                                style="float: right;margin-bottom: 7px;margin-top: -13px;"
+                                type="button" class="layui-btn layui-btn-normal">修改分数</button>
+                    </div>
+                    <hr/>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space15" style="background-color: #F2F2F2;">
+                            <div class="layui-col-sm12">
+                                <div class="layui-card">
+                                    <table class="layui-table" lay-skin="line">
+                                        <colgroup>
+                                            <col width="150">
+                                            <col width="150">
+                                            <col width="150">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td><span>题目号：</span><span th:text="${detail.index}"></span></td>
+                                            <td><span>系统评分：</span><span th:text="${detail.sysScores}"></span></td>
+                                            <td><span>教师评分：</span><span th:text="${detail.teacherScores}"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <span>答案：</span>
+                                                <div th:if="${detail.typeId==3}">
+                                                    <p th:if="${detail.result=='T'}">正确</p>
+                                                    <p th:if="${detail.result=='F'}">错误</p>
+                                                </div>
+                                                <div th:if="${detail.typeId!=3}" th:utext="${detail.result}"></div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+
+    //JavaScript代码区域
+    layui.use(['table', 'element', 'form'], function () {
+        var table = layui.table;
+        var $ = layui.$;
+        var form = layui.form;
+        var element = layui.element;
+
+    });
+
+</script>
+
+</html>

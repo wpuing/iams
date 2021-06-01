@@ -6,8 +6,10 @@ import com.iams.common.util.Result;
 import com.iams.common.util.ResultGenerator;
 import com.iams.common.util.Utils;
 import com.iams.core.dto.CourseDto;
+import com.iams.core.mapper.CourseMapper;
 import com.iams.core.pojo.Course;
 import com.iams.core.pojo.GiveLessons;
+import com.iams.core.service.BaseService;
 import com.iams.core.service.CourseService;
 import com.iams.core.service.GiveLessonsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,9 @@ public class CourseController {
 
     @Autowired
     private GiveLessonsService giveLessonsService;
+
+    @Autowired
+    private CourseMapper courseMapper;
 
 
     @RequestMapping("/list/studentPage")
@@ -194,6 +199,15 @@ public class CourseController {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
         }
         giveLessonsService.delete(courseService.find(id).getCourseNumber());//删除关系
+        return ResultGenerator.genSuccessResult();
+    }
+
+    @RequestMapping("/deleteByIds/{ids}")
+    @ResponseBody
+    public Result delete(@PathVariable("ids") String ids) {
+        if(BaseService.deleteByIds(ids,courseMapper)<=0){
+            return ResultGenerator.genFailResult("删除失败！"+ids);
+        }
         return ResultGenerator.genSuccessResult();
     }
 

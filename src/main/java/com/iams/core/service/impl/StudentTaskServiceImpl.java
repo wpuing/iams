@@ -40,6 +40,11 @@ public class StudentTaskServiceImpl implements StudentTaskService {
     }
 
     @Override
+    public List<String> findEmails(Integer assignmentId) {
+        return studentTaskMapper.selectStudentEmails(assignmentId);
+    }
+
+    @Override
     public int insert(StudentTask studentTask) {
         studentTask.setId(null);
         if(check(studentTask)){

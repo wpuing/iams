@@ -24,4 +24,11 @@ public interface StudentResultMapper extends BaseMapper<StudentResult> {
 
     List<StudentScoresDto> selectScoresByNumber(Map<String, Object> paramsMap);
 
+//    /**
+//     * 查询题目的最大最小值
+//     * @param map 作业编号,类型,题目编号,Integer assignmentId,Integer typeId,Integer topicId
+//     * @return
+//     */
+//    List<Map<String,Object>> selectMaxAndMin(Map<String,Object> map);
+
 }

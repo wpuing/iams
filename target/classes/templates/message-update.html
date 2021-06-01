@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>添加学生</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span style="font-weight: bold;font-size: 18px;">请输入信息</span>
+                </div>
+                <div class="layui-row layui-card-body">
+                    <blockquote class="layui-elem-quote" th:text="${message.title}"></blockquote>
+                    <p>留言人： <span th:text="${message.author}"></span></p>
+                    <p>状态： <span th:text="${message.status}"></span></p>
+                    <p>留言时间： <span th:text="${#dates.format(message.createTime,'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                    <span>内容：</span><div style="white-space:pre;" th:text="${message.content}"></div>
+                    <form class="layui-form" lay-filter="example">
+                        <input type="hidden" id="messageId" name="messageId" th:value="${message.id}">
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">回复：</label>
+                            <div class="layui-input-block">
+                                <pre>
+                                    <textarea id="reply" name="reply" lay-verify="required" lay-reqtext="请输入内容？"
+                                          placeholder="请输入内容" class="layui-textarea"></textarea>
+                                </pre>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="status" value="未解决" title="未解决"
+                                       th:checked="${message.status} eq '未解决'">
+                                <input type="radio" name="status" value="待处理" title="待处理"
+                                       th:checked="${message.status} eq '待处理'">
+                                <input type="radio" name="status" value="已处理" title="已处理"
+                                       th:checked="${message.status} eq '已处理'">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="layer_close();">取消
+                                </button>
+                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form;
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            var newContent={"id":$("#messageId").val(),"reply":$("#reply").val(),"status":$('input[name="status"]:checked').val()};
+            insertOrUpdate(my_localhost + "/message/update", newContent, '修改留言');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+</script>
+</html>

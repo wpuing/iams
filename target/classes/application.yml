@@ -1,0 +1,56 @@
+server:
+  port: 8488
+
+spring:
+  ## 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/iams_dev?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&useSSL=true
+    username: root
+    password: root
+
+  mvc:
+    ## 静态资源
+    static-path-pattern: /static/**
+  resources:
+    ## 文件映射
+    static-locations:
+      - classpath:/static/
+      - file:D:\CodeSpace\Java\Test\file\iams\
+  ## 邮件配置
+  mail:
+    host: smtp.qq.com
+    username: 865230476@qq.com
+    password: yhsejnezodrdbcce
+    default-encoding: UTF-8
+
+## 自定义邮箱
+mail.fromMail.addr: 865230476@qq.com
+
+
+#  thymeleaf:
+#    prefix: classpath:/templates/
+#    suffix: .html
+
+## mybatis-plus 配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      ## 驼峰
+      table-underline: true
+      ## 逻辑删除 默认 0未删除 1删除
+      logic-delete-field: daleted
+  type-aliases-package: com.iams.core.pojo
+      ##实体类映射
+  mapper-locations:
+    - mappers/*
+## 逻辑删除注解  @TableLogic 注解，用于触发拦截器，删除时不会对其进行删除，执行的是更新操作，把deleted字段改为了deleted=1，表示已经删除
+## @TableField(fill = FieldFill.INSERT)，当添加时，会自动给该属性赋值，具体赋值什么就要看我们在配置类中的配置了，这里默认添加deleted=0
+##
+
+##模板下载：http://localhost:8488/giveLessons/download
+
+## login
+

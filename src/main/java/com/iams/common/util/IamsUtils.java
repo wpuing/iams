@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -275,7 +276,7 @@ public class IamsUtils {
      */
     public static List<PermissionBo> sort(Integer parentId, List<PermissionBo> itemCatsBeforeList, List<PermissionBo> itemCatsAfterList) {
         for (PermissionBo entity : itemCatsBeforeList) {
-            if (entity.getParentId().equals(parentId)) {
+            if (entity!=null && entity.getParentId()!=null && entity.getParentId().equals(parentId)) {
                 itemCatsAfterList.add(entity);
                 sort(entity.getId(), itemCatsBeforeList, itemCatsAfterList);
             }
@@ -360,5 +361,25 @@ public class IamsUtils {
         return str.replace(",", "");
 
     }
+
+    /**
+     * 时间比较
+     * @param date1
+     * @param date2
+     */
+    public static int compareDates(Date date1, Date date2)
+    {
+        if(date1.after(date2)){//1在2之后
+            return 1;
+        }
+        if(date1.before(date2)){//1在2之前
+            return 2;
+        }
+        if(date1.equals(date2)){//1等于2
+            return 3;
+        }
+        return 0;
+    }
+
 
 }

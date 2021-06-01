@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>修改成绩</title>
+    <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body>
+<div style="padding: 15px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="text-align: center;">
+                <div class="layui-card-header">
+                    <span style="font-weight: bold;font-size: 18px;">请输入信息</span>
+                </div>
+                <div class="layui-row layui-card-body">
+                    <form class="layui-form" lay-filter="example">
+                        <input type="hidden" name="id" id="id" th:value="${scores.id}"/>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">学号: </label>
+                            <div class="layui-input-block">
+                                <span th:text="${scores.studentId}"></span>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">作业号: </label>
+                            <div class="layui-input-block">
+                                <span th:text="${scores.assignmentId}"></span>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">成绩: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="score" lay-verify="required" lay-reqtext="请输入成绩？"
+                                       placeholder="请输入成绩" autocomplete="off"
+                                       class="layui-input" th:value="${scores.score}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">评语: </label>
+                            <div class="layui-input-block">
+                                <textarea th:text="${scores.comment}" name="comment" placeholder="请输入评语信息" class="layui-textarea" ></textarea>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button type="button" class="layui-btn layui-btn-normal" onclick="layer_close()">取消
+                                </button>
+                                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script>
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer,
+            form = layui.form;
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            insertOrUpdate(my_localhost + "/scores/update", data.field, '修改成绩信息');
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</html>

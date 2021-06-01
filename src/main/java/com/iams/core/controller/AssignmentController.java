@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,8 +105,6 @@ public class AssignmentController {
         Float objScore = assignmentService.findScore(id, IamsConstants.TOPIC_TYPE[4], true);//客观题分数
         Float subScore = assignmentService.findScore(id, IamsConstants.TOPIC_TYPE[4], false);//主观题分数
         Double score = (objScore == null ? 0.0 : objScore) + (subScore == null ? 0.0 : subScore);
-//        AssignmentTeacherDto atd = findAssignmentDetail(id);
-//        model.addAttribute("at",atd);
         AssignmentDetails assignmentDetails = assignmentDetails(id);
         model.addAttribute("ads", assignmentDetails);
         model.addAttribute("score", score);
@@ -125,7 +124,18 @@ public class AssignmentController {
             return "404";
         }
         AssignmentStudentDetails details = updateResultService.find(id, studentNumber);
+        //判断限定时间是否在范围之内
+        int isAnswer=0;
+        if(details.getAssignment().getLimitingTime()!=null){//不等于空就是存在时间
+            //1 --1在2之后
+            //2 --1在2之前
+            //3 --1等于2
+            if(IamsUtils.compareDates(details.getAssignment().getLimitingTime(),new Date())!=1){
+                isAnswer=1;
+            }
+        }
         model.addAttribute("ads", details);
+        model.addAttribute("isAnswer", isAnswer);
         return "student/student-assignment-info";
     }
 
@@ -145,8 +155,12 @@ public class AssignmentController {
         Float subScore = assignmentService.findScore(id, IamsConstants.TOPIC_TYPE[4], false);//主观题分数
         Double score = (objScore == null ? 0.0 : objScore) + (subScore == null ? 0.0 : subScore);
         AssignmentScoresDetails details = updateResultService.findScores(id, studentNumber);
+        System.out.println("选择题的长度："+details.getSingleChoiceList());
+        Scores scores = scoresService.find(studentNumber, id);
+        Float studentScores = new  Float(0.0);
+        if(!ObjectUtils.isEmpty(scores)) studentScores = scores.getScore();
         model.addAttribute("ads", details);
-        model.addAttribute("studentScores", scoresService.find(studentNumber,id).getScore());
+        model.addAttribute("studentScores",studentScores);
         model.addAttribute("teacherScores", score);
         return "student/student-assignment-scores-info";
     }
@@ -244,7 +258,6 @@ public class AssignmentController {
             return ResultGenerator.genFailResult("参数作业编号或学号为空！！");
         }
         List<TopicAnswer> list = JSON.parseArray(studentScantron.getTopicAnswerList(), TopicAnswer.class);
-        list.forEach(System.out::println);
         //查询该作业的总分数
         Float objScore = assignmentService.findScore(studentScantron.getAssignmentId(), IamsConstants.TOPIC_TYPE[4], true);//客观题分数
         Float subScore = assignmentService.findScore(studentScantron.getAssignmentId(), IamsConstants.TOPIC_TYPE[4], false);//主观题分数
@@ -303,18 +316,16 @@ public class AssignmentController {
         if (!Utils.isEmpty(courseId) || !Utils.isEmpty(teacherId) || !Utils.isEmpty(id)) {
             return "404";
         }
-        GiveLessons g = new GiveLessons()
-                .setTeacherId(teacherId)
-                .setCourseId(courseId);
-        List<GiveLessons> giveLessonsList = giveLessonsService.find(g, false);//拿到课程关系
-        //查询作业学生关系id
-
-        //提取学号
-        List<String> studentNumbers = giveLessonsList.stream().map(GiveLessons::getStudentId).collect(Collectors.toList());
-        model.addAttribute("numbers", studentNumbers);
+        //1. 查询学生任务表得到学号id回显回前面
+        List<StudentTask> studentTaskList = studentTaskService.find(id);
+        model.addAttribute("studentTaskList", studentTaskList);
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("teacherId", teacherId);
         model.addAttribute("assignmentId", id);
         return "/teacher/issue-student-number-list";
     }
+
+
 
     /**
      * 上传图片
@@ -362,8 +373,7 @@ public class AssignmentController {
     }
 
     /**
-     * 发布作业
-     *
+     * 添加学生任务
      * @param resultData 作业id & 学号集合
      * @return
      */
@@ -375,15 +385,35 @@ public class AssignmentController {
         }
         List<String> list = JSON.parseArray(resultData.getNumbers(), String.class);
         int insert = studentTaskService.insert(list, resultData.getAssignmentId());
-        if (insert <= 0) {
-            return ResultGenerator.genFailResult("修改失败！");
+        updateAssignmentTotal(resultData.getAssignmentId());//更新人数
+        return ResultGenerator.genSuccessResult("添加了：" + insert + " ,条记录！");
+    }
+
+    /**
+     * 添加课程学生到学生任务
+     * @param courseId 课程编号
+     * @param teacherId 教师号
+     * @return
+     */
+    @RequestMapping("/addIssueByCAndS")
+    @ResponseBody
+    public Result addIssueByCAndS(String courseId, String teacherId,Integer id) {
+        if (!Utils.isEmpty(courseId) || !Utils.isEmpty(teacherId) || !Utils.isEmpty(id)) {
+            return ResultGenerator.genFailResult("参数缺失，请检查！");
         }
+        GiveLessons g = new GiveLessons()
+                .setTeacherId(teacherId)
+                .setCourseId(courseId);
+        List<GiveLessons> giveLessonsList = giveLessonsService.find(g, false);//拿到课程关系
+        //提取学号
+        List<String> studentNumbers = giveLessonsList.stream().map(GiveLessons::getStudentId).collect(Collectors.toList());
+        int insert = studentTaskService.insert(studentNumbers, id);
+        updateAssignmentTotal(id);//更新人数
         return ResultGenerator.genSuccessResult("添加了：" + insert + " ,条记录！");
     }
 
     /**
      * 修改发布
-     *
      * @param isAnswer     0或者1
      * @param assignmentId 作业编号
      * @return
@@ -424,6 +454,11 @@ public class AssignmentController {
         return ResultGenerator.genSuccessResult();
     }
 
+    /**
+     * 整合该作业的数据
+     * @param id
+     * @return
+     */
     private AssignmentDetails assignmentDetails(Integer id) {
         AssignmentDetails assignmentDetails = new AssignmentDetails();
         //作业信息
@@ -456,4 +491,16 @@ public class AssignmentController {
         }
         return true;
     }
+
+
+    private void updateAssignmentTotal(Integer id){
+        //1.查询该作业的所有任务学生
+        List<StudentTask> studentTaskList = studentTaskService.find(id);
+        //2.修改人数
+        Assignment assignment = assignmentService.find(id);
+        assignment.setTurnout(studentTaskList.size());
+        assignmentService.update(assignment);
+    }
+
+
 }

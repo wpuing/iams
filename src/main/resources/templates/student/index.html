@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>学生端-主页</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <span th:text="${session.userInfo.name}"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a th:onclick="layer_show('基本资料','/student/info?id=[[${session.userInfo.id}]]','800','560');">基本资料</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a th:href="@{'/logout'}">退出登录</a></li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="test">
+                <li class="layui-nav-item">
+                    <a th:href="@{'/course/list/studentPage?studentId='+${session.userInfo.number}}">课程列表</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a th:href="@{'/message/list/student'}">留言列表</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('添加留言','/message/add.html/student/[[${session.userInfo.id}]]','700','500');">添加留言</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <h1 style="text-align: center;margin-top: 150px;">欢迎来到网络作业管理系统-学生端子系统</h1>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+    //JavaScript代码区域
+    layui.use(['element', 'layer'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var element = layui.element;
+
+    });
+</script>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>作业学习情况</title>
+    <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- 内容主体区域 -->
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span class="layui-breadcrumb" lay-separator="/">
+                        <a href="/index.html?role=teacher">首页</a>
+                        <a>作业管理</a>
+                        <a href="#"><cite>作业成绩详情</cite></a>
+                    </span>
+                </div>
+                <div class="layui-card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <hr/>
+                    <div class="layui-card-body">
+                        <div class="layui-row layui-col-space15" style="background-color: #F2F2F2;">
+                            <div class="layui-col-sm12">
+                                <div class="layui-card">
+                                    <h2 style="text-align: center;padding: 7px 7px;">作业基本信息</h2>
+                                    <table class="layui-table" lay-skin="line" style="text-align: center">
+                                        <colgroup>
+                                            <col width="150">
+                                            <col width="150">
+                                            <col width="150">
+                                            <col width="150">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>最高分</td>
+                                            <td>最低分</td>
+                                            <td>平均分</td>
+                                            <td>答题人数</td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${parameters.topScore}"></td>
+                                            <td th:text="${parameters.lowestScore}"></td>
+                                            <td th:text="${parameters.average}"></td>
+                                            <td th:text="${parameters.population}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="layui-card">
+                                    <h2 style="text-align: center;padding: 7px 7px;">作业题目基本信息</h2>
+                                    <table class="layui-table" lay-skin="line"  style="text-align: center">
+                                        <colgroup>
+                                            <col width="150">
+                                            <col width="120">
+                                            <col width="120">
+                                            <col width="120">
+                                            <col width="120">
+                                            <col width="120">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>题目</td>
+                                            <td>最高分</td>
+                                            <td>最低分</td>
+                                            <td>平均分</td>
+                                            <td>答题人数</td>
+                                            <td>本题分数</td>
+                                        </tr>
+                                        <tr th:each="p:${parameters.parametersList}">
+                                            <td>
+                                                <span th:if="${p.typeId==1}">单选题 <span>第 <span th:text="${p.index}"></span>  题</span></span>
+                                                <span th:if="${p.typeId==2}">多选题 <span>第 <span th:text="${p.index}"></span>  题</span></span>
+                                                <span th:if="${p.typeId==3}">判断题 <span>第 <span th:text="${p.index}"></span>  题</span></span>
+                                                <span th:if="${p.typeId==4}">填空题 <span>第 <span th:text="${p.index}"></span>  题</span></span>
+                                                <span th:if="${p.typeId==5}">主观题 <span>第 <span th:text="${p.index}"></span>  题</span></span>
+                                            </td>
+                                            <td th:text="${p.topScore}"></td>
+                                            <td th:text="${p.lowestScore}"></td>
+                                            <td th:text="${p.average}"></td>
+                                            <td th:text="${p.population}"></td>
+                                            <td th:text="${p.score}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/static/lib/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/lib/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/base.js}"></script>
+<script type="text/javascript" th:src="@{/static/common/js/page.js}"></script>
+<script>
+
+    //JavaScript代码区域
+    layui.use(['table', 'element', 'form'], function () {
+        var table = layui.table;
+        var $ = layui.$;
+        var form = layui.form;
+        var element = layui.element;
+
+    });
+
+</script>
+
+</html>
