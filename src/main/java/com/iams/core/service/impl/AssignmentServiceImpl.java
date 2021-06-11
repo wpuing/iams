@@ -19,6 +19,7 @@ import com.iams.core.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -41,18 +42,30 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    public List<Assignment> find(String startTime, String endTime) {
+        LambdaQueryWrapper<Assignment> wrapper = Wrappers.<Assignment>lambdaQuery();
+        wrapper.eq(Assignment::getIsSend,0);//当前未发送的作业
+        if (Utils.isEmpty(startTime) && Utils.isEmpty(endTime)) {//定时时间
+            wrapper.apply("date_format(task_time,'%Y-%m-%d %H:%i:%s')>={0}", startTime);
+            wrapper.apply("date_format(task_time,'%Y-%m-%d %H:%i:%s')<={0}", endTime);
+        }
+        return assignmentMapper.selectList(wrapper);
+    }
+
+    @Override
     public List<StudentTaskDto> find(String courseNumber, String studentNumber,boolean flag) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = dateFormat.format(new Date());
         QueryWrapper<Assignment> query = Wrappers.<Assignment>query();
         query.eq("a.course_id",courseNumber);
         query.eq("st.student_id",studentNumber);
         if(flag){//待完成
-            query.and(a->a.apply("date_format(a.limiting_time,'%Y-%m-%d')>{0}", new Date())
+            query.and(a->a.apply("date_format(a.limiting_time,'%Y-%m-%d %H:%i:%s')>={0}", date)
                     .or()
                     .isNull("a.limiting_time"));
         }
         if(!flag){//已完成
-            query.and(a->a.apply("date_format(a.limiting_time,'%Y-%m-%d')<={0}", new Date())
-                    .or()
+            query.and(a->a.apply("date_format(a.limiting_time,'%Y-%m-%d %H:%i:%s')<{0}", date)
                     .isNotNull("a.limiting_time"));
         }
         return assignmentMapper.findStudentAssignment(query);
@@ -141,6 +154,8 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setId(null);
         assignment.setDeleted(IamsConstants.DELETED);
         check(assignment);
+        //时间不为空时且是否发送为空时设置为0
+        if(assignment.getTaskTime()!=null&&assignment.getIsSend()==null)assignment.setIsSend(0);
         return assignmentMapper.insert(assignment);
     }
 
@@ -148,6 +163,8 @@ public class AssignmentServiceImpl implements AssignmentService {
     public int update(Assignment assignment) {
         sel(assignment.getId());//*查询该作业是否存在
         check(assignment);//检查
+        //当定时为空时则是否发送为1
+        if(assignment.getTaskTime()==null)assignment.setIsSend(1);//
         return assignmentMapper.updateById(assignment);
     }
 

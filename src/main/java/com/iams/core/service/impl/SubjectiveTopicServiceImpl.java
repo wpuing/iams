@@ -2,6 +2,7 @@ package com.iams.core.service.impl;
 
 import com.iams.common.constant.IamsConstants;
 import com.iams.common.exception.ParameterException;
+import com.iams.common.util.SpringUtil;
 import com.iams.common.util.Utils;
 import com.iams.core.mapper.SubjectiveTopicMapper;
 import com.iams.core.pojo.SubjectiveTopic;
@@ -30,6 +31,9 @@ public class SubjectiveTopicServiceImpl implements SubjectiveTopicService {
 
     @Override
     public int insert(SubjectiveTopic subjectiveTopic) {
+        if(subjectiveTopicMapper==null){
+            subjectiveTopicMapper = (SubjectiveTopicMapper) SpringUtil.getBean("subjectiveTopicMapper");
+        }
         subjectiveTopic.setId(null);
         subjectiveTopic.setDeleted(IamsConstants.DELETED);
         return subjectiveTopicMapper.insert(subjectiveTopic);

@@ -9,6 +9,7 @@ import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.ui.Model;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *  @Date: 2021/2/1 17:13
  *  @Description: 自定义异常拦截器
  */
-//@ControllerAdvice
+@ControllerAdvice
 public class ExceptionInterceptor {
 
 	/**
@@ -42,11 +43,12 @@ public class ExceptionInterceptor {
 	 * @return
 	 */
 	@ExceptionHandler(OperationException.class)
-	@ResponseBody
-	public Result operationException(OperationException e) {
-		return new Result()
+	public String operationException(OperationException e, Model model) {
+		Result result = new Result()
 				.setCode(ResultCode.INTERNAL_SERVER_ERROR)
 				.setMessage(e.getMessage());
+		model.addAttribute("result",result);
+		return "operationException";
 	}
 
 	/**

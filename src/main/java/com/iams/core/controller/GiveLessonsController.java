@@ -2,6 +2,7 @@ package com.iams.core.controller;
 
 
 import com.iams.common.constant.IamsConstants;
+import com.iams.common.exception.OperationException;
 import com.iams.common.exception.ParameterException;
 import com.iams.common.util.*;
 import com.iams.core.dto.GiveLessonsDto;
@@ -9,6 +10,7 @@ import com.iams.core.mapper.GiveLessonsMapper;
 import com.iams.core.pojo.GiveLessons;
 import com.iams.core.service.BaseService;
 import com.iams.core.service.GiveLessonsService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,18 +49,24 @@ public class GiveLessonsController {
      * @param model
      * @return
      */
-    @RequestMapping("/studentNumbers/{name}/{giveId}")
-    public String imt(@PathVariable("name") String fileName,@PathVariable("giveId") Integer giveId
-            ,Model model) throws IOException {
+    @RequestMapping("/studentNumbers")
+    @RequiresPermissions("giveLessons:studentNumbers:page")
+    public String imt(String fileName,String giveId,Model model) throws IOException {
         Utils.isEmpty(fileName,"解析失败，文件名为空！！！！！");
-        GiveLessons giveLessons = giveLessonsService.find(giveId);//查询教师课程关系
+        System.out.println("文件："+fileName+"  ,giveId: "+giveId);
+        if(!Utils.isEmpty(giveId) || giveId.equals("null")){
+            throw new OperationException("该课程没有分配教师！设置归属再进行操作！");
+        }
+        GiveLessons giveLessons = giveLessonsService.find(Integer.parseInt(giveId));//查询教师课程关系
+        if(ObjectUtils.isEmpty(giveLessons)){
+            throw new OperationException("该课程没有分配教师！设置归属再进行操作！");
+        }
         List<GiveLessons> list = ExcelUtils.importExcel(IamsConstants.NUMBER_FILE_PATH+fileName,0,1, GiveLessons.class);
         List<String> numbers = new ArrayList<>();
         if (list != null && list.size() > 0) {
             // 提取出学号
             numbers=list.stream().map(GiveLessons::getStudentId).collect(Collectors.toList());
         }
-        numbers.forEach(System.out::println);
         model.addAttribute("numbers",numbers);
         model.addAttribute("giveLessons",giveLessons);
         return "student-number-list";
@@ -66,9 +74,9 @@ public class GiveLessonsController {
 
     @RequestMapping(value = "/upload",method = RequestMethod.POST)
     @ResponseBody
-    public Result upload(@RequestParam("file") MultipartFile file) throws IOException {
+    public Result upload(@RequestParam("file") MultipartFile file) {
         String flag = FileUtils.upload(file,IamsConstants.NUMBER_FILE_PATH);
-        System.out.println("文件名称："+flag);
+        System.out.println("文件名称2："+flag);
         if(Utils.isEmpty(flag)){
             return ResultGenerator.genSuccessResult(flag);
         }
@@ -144,13 +152,18 @@ public class GiveLessonsController {
 
     @ResponseBody
     @RequestMapping("/delete/{id}")
+    @RequiresPermissions("giveLessons:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         return del(id);
     }
 
-    @RequestMapping("/deleteByIds/{ids}")
+    @RequestMapping("/deleteByIds")
     @ResponseBody
-    public Result delete(@PathVariable("ids") String ids) {
+    @RequiresPermissions("giveLessons:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
         if(BaseService.deleteByIds(ids,giveLessonsMapper)<=0){
             return ResultGenerator.genFailResult("删除失败！"+ids);
         }

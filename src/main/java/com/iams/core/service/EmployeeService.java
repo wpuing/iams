@@ -44,7 +44,7 @@ public interface EmployeeService{
    LayResult find(String condition, Integer roleId, String startTime, String endTime, Integer pageNum, Integer pageSize);
 
 
-    List<Employee> find(String condition);
+    List<Employee> find(String condition,Integer type);
 
     /**
      * 添加员工信息

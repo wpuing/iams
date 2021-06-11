@@ -56,6 +56,7 @@ public class StudentController {
     }
 
     @RequestMapping("/info")
+    @RequiresPermissions("student:info:page")
     public String info(Integer id,Model model){
         if(!Utils.isEmpty(id)){
             return "404";
@@ -91,6 +92,7 @@ public class StudentController {
 
     @RequestMapping("/add")
     @ResponseBody
+    //@RequiresPermissions("student:add:operation")
     public Result add(@Valid Student student) {
         student.setPassword(Utils.isEmpty(student.getPassword())?student.getPassword():student.getNumber());
         if (studentService.insert(student) <= 0) {
@@ -101,6 +103,7 @@ public class StudentController {
 
     @RequestMapping("/update")
     @ResponseBody
+    @RequiresPermissions("student:update:operation")
     public Result update(@Valid Student student) {
         Student result = studentService.find(student.getId());
         if (studentService.update(student,true) <= 0) {
@@ -114,6 +117,7 @@ public class StudentController {
 
     @RequestMapping("/updateEmail")
     @ResponseBody
+    @RequiresPermissions("student:updateEmail:operation")
     public Result updateEmail(Integer id,String email) {
         Utils.isEmpty(email,"修改的邮箱不能为空！！！");
         Student student = studentService.find(id);
@@ -126,6 +130,7 @@ public class StudentController {
 
     @RequestMapping("/updatePassword")
     @ResponseBody
+    @RequiresPermissions("student:updatePassword:operation")
     public Result updatePassword(Integer id,String password) {
         Utils.isEmpty(password,"修改的密码不能为空！！！");
         Student student = studentService.find(id);
@@ -138,6 +143,7 @@ public class StudentController {
 
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("student:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if (studentService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
@@ -145,9 +151,13 @@ public class StudentController {
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping("/deleteByIds/{ids}")
+    @RequestMapping("/deleteByIds")
     @ResponseBody
-    public Result delete(@PathVariable("ids") String ids) {
+    @RequiresPermissions("student:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
         if(BaseService.deleteByIds(ids,studentMapper)<=0){
             return ResultGenerator.genFailResult("删除失败！"+ids);
         }

@@ -6,6 +6,7 @@ import com.iams.common.util.ResultGenerator;
 import com.iams.common.util.Utils;
 import com.iams.core.pojo.Answer;
 import com.iams.core.service.AnswerService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +32,7 @@ public class AnswerController {
     private AnswerService answerService;
 
     @RequestMapping("/add.html")
+    @RequiresPermissions("answer:add:page")
     public String add(String name,Integer assignmentId,Integer parentId,Model model){
         Utils.isEmpty(name,"用户名为空，请检查！");
         Utils.isEmpty(assignmentId,"作业号为空或不规范，请检查！");
@@ -44,6 +46,7 @@ public class AnswerController {
     }
 
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("answer:update:page")
     public String update(@PathVariable("id") Integer id, Model model){
         if(!Utils.isEmpty(id)){
             return "404";
@@ -53,6 +56,7 @@ public class AnswerController {
     }
 
     @RequestMapping("/findInfoByTopicId/{id}")
+    @RequiresPermissions("answer:findInfoByTopicId:page")
     public String answerInfo(@PathVariable("id") Integer id, Model model){
         if(!Utils.isEmpty(id)){
             return "404";
@@ -88,6 +92,7 @@ public class AnswerController {
 
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("answer:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if(answerService.delete(id)<=0){
             return ResultGenerator.genFailResult("删除失败！id:"+id);

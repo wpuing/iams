@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iams.common.constant.IamsConstants;
-import com.iams.common.util.IamsUtils;
-import com.iams.common.util.LayResult;
-import com.iams.common.util.PythonUtil;
-import com.iams.common.util.Utils;
+import com.iams.common.util.*;
 import com.iams.core.dto.AnswerDto;
 import com.iams.core.dto.CourseDto;
 import com.iams.core.dto.assginment.*;
@@ -16,7 +13,10 @@ import com.iams.core.dto.mcq.Choice;
 import com.iams.core.dto.scores.AssignmentScoresDetails;
 import com.iams.core.dto.scores.StudentScoresDetails;
 import com.iams.core.dto.scores.StudentScoresDto;
-import com.iams.core.dto.student.*;
+import com.iams.core.dto.student.AssignmentDetails;
+import com.iams.core.dto.student.AssignmentStudentDetails;
+import com.iams.core.dto.student.StudentResultDto;
+import com.iams.core.dto.student.StudentTaskDto;
 import com.iams.core.mapper.*;
 import com.iams.core.pojo.*;
 import com.iams.core.service.*;
@@ -90,6 +90,22 @@ public class IamsTest {
     @Autowired
     private AssignmentTopicMapper assignmentTopicMapper;
 
+    @Autowired
+    private RolePermissionService rolePermissionService;
+
+
+    @Test
+    public void t38() throws Exception {//批量添加权限
+        //教师作业管理
+        List<Integer> list = Arrays.asList(8, 76, 75, 84, 79, 89, 90, 88, 87, 86, 82, 80, 85, 81);
+        for (Integer id:list){
+            RolePermission rp = new RolePermission();
+            rp.setRoleId(2).setPermissionId(id);
+            int insert = rolePermissionService.insert(rp);
+            System.out.println("添加了： "+insert+" ,id= "+id);
+        }
+
+    }
 
     @Test
     public void t37() {//查询该作业的题目的平均分

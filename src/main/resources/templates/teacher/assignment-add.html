@@ -39,6 +39,19 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
+                            <label class="layui-form-label" style="text-align: center">是否发送: </label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="isSend" value="0" title="是" checked="">
+                                <input type="radio" name="isSend" value="1" title="否">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">定时: </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="taskTime" id="taskTime" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
                             <label class="layui-form-label">限时: </label>
                             <div class="layui-input-block">
                                 <input type="text" name="limitingTime" id="limitingTime" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input">
@@ -69,6 +82,12 @@
         //日期常规用法
         laydate.render({
             elem: '#limitingTime',
+            type: 'datetime',
+            format:'yyyy-MM-dd HH:mm:ss',
+            trigger: 'click'
+        });
+        laydate.render({
+            elem: '#taskTime',
             type: 'datetime',
             format:'yyyy-MM-dd HH:mm:ss',
             trigger: 'click'

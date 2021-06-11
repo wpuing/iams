@@ -10,6 +10,7 @@ import com.iams.core.mapper.MessageMapper;
 import com.iams.core.pojo.Message;
 import com.iams.core.service.BaseService;
 import com.iams.core.service.MessageService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +39,7 @@ public class MessageController {
     private MessageMapper messageMapper;
 
     @RequestMapping("/add.html/{role}/{id}")
+    @RequiresPermissions("message:add:page")
     public String add(@PathVariable("role") String role,@PathVariable("id")Integer id, Model model){
         if(!Utils.isEmpty(role)){//管理员
             return "404";
@@ -48,6 +50,7 @@ public class MessageController {
 
 
     @RequestMapping("/list/{role}")
+    @RequiresPermissions("message:list:page")
     public String list(@PathVariable("role") String role, Model model){
         if(!Utils.isEmpty(role)){//管理员
             return "404";
@@ -57,6 +60,7 @@ public class MessageController {
     }
 
     @RequestMapping("/find.html/{id}")
+    @RequiresPermissions("message:find:page")
     public String find(@PathVariable("id") Integer id, Model model) {
         Message message = messageService.find(id);
         model.addAttribute("message",message);
@@ -64,6 +68,7 @@ public class MessageController {
     }
 
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("message:update:page")
     public String update(@PathVariable("id") Integer id, Model model) {
         Message message = messageService.find(id);
         model.addAttribute("message",message);
@@ -123,6 +128,7 @@ public class MessageController {
 
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("message:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if (messageService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
@@ -130,9 +136,13 @@ public class MessageController {
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping("/deleteByIds/{ids}")
+    @RequestMapping("/deleteByIds")
     @ResponseBody
-    public Result delete(@PathVariable("ids") String ids) {
+    @RequiresPermissions("message:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
         if(BaseService.deleteByIds(ids,messageMapper)<=0){
             return ResultGenerator.genFailResult("删除失败！"+ids);
         }

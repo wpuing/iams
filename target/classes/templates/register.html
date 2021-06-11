@@ -153,7 +153,7 @@
             var role = $("#role").val();//角色
             var personalInfo={"number":userInfo.number,"name":userInfo.name
                 ,"password":userInfo.password1,"email":userInfo.email,"roleId":role};
-            $.post(my_localhost+'/check?code='+emailCode, function (data) {
+            $.post(my_localhost+'/check/'+emailCode, function (data) {
                 if(data.code=='200'){//验证成功
                     if(role==1){//学生
                         insertOrUpdate(my_localhost + "/student/add", personalInfo, '注册学生');

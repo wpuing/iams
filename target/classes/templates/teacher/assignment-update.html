@@ -16,6 +16,7 @@
                 </div>
                 <div class="layui-row layui-card-body">
                     <input type="hidden" id="limitingTime1" name="limitingTime1" th:value="${#dates.format(assignment.limitingTime, 'yyyy-MM-dd HH:mm:ss')}" class="layui-input">
+                    <input type="hidden" id="taskTime1" name="taskTime1" th:value="${#dates.format(assignment.taskTime, 'yyyy-MM-dd HH:mm:ss')}" class="layui-input">
                     <form class="layui-form" lay-filter="example">
                         <input type="hidden" id="id" name="id" th:value="${assignment.id}"/>
                         <input type="hidden" id="courseId" name="courseId" th:value="${assignment.courseId}"/>
@@ -38,6 +39,19 @@
                             <label class="layui-form-label">文件: </label>
                             <div class="layui-input-block">
                                 <input type="text" id="file" name="file" th:value="${assignment.file}" class="layui-input" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="text-align: center">是否发送: </label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="isSend" value="0" title="是" th:checked="${assignment.isSend} eq 0">
+                                <input type="radio" name="isSend" value="1" title="否" th:checked="${assignment.isSend} eq 1">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">定时: </label>
+                            <div class="layui-input-block">
+                                <input type="text" id="taskTime" name="taskTime"  lay-verify="datetime"  placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -70,8 +84,16 @@
             form = layui.form,
             laydate = layui.laydate;
         //日期常规用法
+        var taskTime= $("#taskTime1").val();
         var limitingTime= $("#limitingTime1").val();
         // layer.alert(limitingTime);
+        laydate.render({
+            elem: '#taskTime',
+            type: 'datetime',
+            format:'yyyy-MM-dd HH:mm:ss',
+            value: taskTime===''?'':new Date(taskTime),
+            trigger: 'click'
+        });
         laydate.render({
             elem: '#limitingTime',
             type: 'datetime',

@@ -53,4 +53,5 @@ public interface PermissionService {
 
     int delete(Integer id);
 
+    void updatePermission();
 }

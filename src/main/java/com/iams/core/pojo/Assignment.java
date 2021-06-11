@@ -64,6 +64,15 @@ public class Assignment implements Serializable {
      */
     private String file;
 
+    private Integer isSend;
+
+    /**
+     * 定时任务
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "task_time")
+    private Date taskTime;
+
     /**
      * 限定时间
      */
@@ -141,6 +150,25 @@ public class Assignment implements Serializable {
         this.file = file;
         return this;
     }
+
+    public Integer getIsSend() {
+        return isSend;
+    }
+
+    public Assignment setIsSend(Integer isSend) {
+        this.isSend = isSend;
+        return this;
+    }
+
+    public Date getTaskTime() {
+        return taskTime;
+    }
+
+    public Assignment setTaskTime(Date taskTime) {
+        this.taskTime = taskTime;
+        return this;
+    }
+
     public Date getLimitingTime() {
         return limitingTime;
     }
@@ -161,16 +189,18 @@ public class Assignment implements Serializable {
     @Override
     public String toString() {
         return "Assignment{" +
-            "id=" + id +
-            ", courseId=" + courseId +
-            ", teacherId=" + teacherId +
-            ", title=" + title +
-            ", description=" + description +
-            ", createTime=" + createTime +
-            ", turnout=" + turnout +
-            ", file=" + file +
-            ", limitingTime=" + limitingTime +
-            ", deleted=" + deleted +
-        "}";
+                "id=" + id +
+                ", courseId='" + courseId + '\'' +
+                ", teacherId='" + teacherId + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", createTime=" + createTime +
+                ", turnout=" + turnout +
+                ", file='" + file + '\'' +
+                ", isSend=" + isSend +
+                ", taskTime=" + taskTime +
+                ", limitingTime=" + limitingTime +
+                ", deleted=" + deleted +
+                '}';
     }
 }

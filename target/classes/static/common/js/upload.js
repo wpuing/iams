@@ -49,7 +49,7 @@ function uplaodFile(giveId) {
         form.append("file", document.getElementById("input-file").files[0]);
         //提交表单
         $.ajax({
-            url: "http://localhost:8488/giveLessons/upload",
+            url: my_localhost+"/giveLessons/upload",
             data: form,
             cache: false,
             async: false,
@@ -59,7 +59,7 @@ function uplaodFile(giveId) {
             contentType: false,
             success: function(data) {
                 if (data.code == '200') {
-                    layer_show("课程学生学号", my_localhost + "/giveLessons/studentNumbers/"+data.data+"/"+giveId, 800, 450);
+                    layer_show("课程学生学号", my_localhost + "/giveLessons/studentNumbers?fileName="+data.data+"&giveId="+giveId, 800, 450);
                 } else {
                     layer.alert("文件解析失败！");
                     layer_close();

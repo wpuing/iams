@@ -50,14 +50,14 @@ public class ShiroConfig {
         map.put("/register","anon");//放行用户注册信息验证
         map.put("/teacher/add","anon");//放行教师注册信息验证
         map.put("/student/add","anon");//放行学生注册信息验证
-        map.put("/check","anon");//放行邮箱验证码验证
+        map.put("/check/**","anon");//放行邮箱验证码验证
         map.put("/email/send","anon");//放行邮箱发送
         map.put("/logout","anon");//放行退出登录
         map.put("/kaptcha","anon");//放行验证码
         //配置系统公共资源
         map.put("/static/**","anon");//放行静态资源
         // 需要验证的 /**
-//        map.put("/**","authc");
+        map.put("/**","authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         shiroFilterFactoryBean.setLoginUrl("/login.html");//默认认证界面路径
         return shiroFilterFactoryBean;

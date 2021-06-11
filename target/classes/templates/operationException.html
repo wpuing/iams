@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>温馨提示</title>
+</head>
+<body>
+        <h1>您的操作有误哟！！！！！</h1>
+        <div>
+            <p>响应码：<span th:text="${result.code}"></span></p>
+            <p>消息：<span th:text="${result.message}"></span></p>
+        </div>
+</body>
+</html>

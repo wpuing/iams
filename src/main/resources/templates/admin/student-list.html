@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>管理员-学生列表</title>
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <div class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 管理端</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <img th:src="@{/static/common/images/t3.jpg}" class="layui-nav-img">
                     <span th:if="session.userInfo!=null"><span th:text="${session.userInfo?.name}">未认证</span></span>
                 </a>
                 <dl class="layui-nav-child">
@@ -196,8 +201,7 @@
                 var arr = [];
                 checkStatus.data.forEach(function(v){ arr.push(v.id)});
                 layer.confirm('真的要删除这些数据吗？', function (index) {
-                    deleted(my_localhost + "/student/deleteByIds/" + arr, '学生');
-                    obj.del();
+                    deleted(my_localhost + "/student/deleteByIds?ids=" + arr, '学生');
                     layer.close(index);
                 });
             }

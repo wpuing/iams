@@ -19,7 +19,9 @@
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <div th:if="${session.userInfo.roleId}==1" class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 学生端</div>
+        <div th:if="${session.userInfo.roleId}==2" class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 教师端</div>
+        <div th:if="${session.userInfo.roleId}==3" class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 管理端</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
             <li class="layui-nav-item">
@@ -30,7 +32,9 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <img th:if="${session.userInfo.roleId}==1" th:src="@{/static/common/images/t1.jpg}" class="layui-nav-img">
+                    <img th:if="${session.userInfo.roleId}==2" th:src="@{/static/common/images/t2.jpg}" class="layui-nav-img">
+                    <img th:if="${session.userInfo.roleId}==3" th:src="@{/static/common/images/t3.jpg}" class="layui-nav-img">
                     <span th:if="session.userInfo!=null"><span th:text="${session.userInfo?.name}">未认证</span></span>
                 </a>
                 <dl class="layui-nav-child">

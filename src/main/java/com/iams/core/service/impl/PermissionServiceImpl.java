@@ -13,6 +13,7 @@ import com.iams.core.dto.PermissionDto;
 import com.iams.core.mapper.PermissionMapper;
 import com.iams.core.pojo.Permission;
 import com.iams.core.pojo.RoleEnum;
+import com.iams.core.pojo.RolePermission;
 import com.iams.core.service.PermissionService;
 import com.iams.core.service.RolePermissionService;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -139,6 +141,17 @@ public class PermissionServiceImpl implements PermissionService {
     public int delete(Integer id) {
         select(id);
         return permissionMapper.deleteById(id);
+    }
+
+    @Override
+    public void updatePermission() {
+        List<Permission> list = permissionMapper.selectList(null);
+        if(!CollectionUtils.isEmpty(list)){
+            List<Integer> ids = list.stream().map(Permission::getId).collect(Collectors.toList());
+            for( Integer id:ids){
+                rolePermissionService.insert(new RolePermission().setPermissionId(id).setRoleId(RoleEnum.getRoleId("superAdmin")));
+            }
+        }
     }
 
     private Permission select(Integer id){

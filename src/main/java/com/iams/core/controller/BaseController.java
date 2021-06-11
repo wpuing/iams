@@ -16,6 +16,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -131,7 +132,7 @@ public class BaseController {
 
 
     /**
-     * 发送验证码2
+     * 发送验证码
      * @return
      */
     @RequestMapping("/email/send")
@@ -150,9 +151,10 @@ public class BaseController {
      * @param code 用户输入的验证码
      * @return
      */
-    @RequestMapping("/check")
+    @RequestMapping("/check/{code}")
     @ResponseBody
-    public Result checkResultCode2(String code,HttpSession session) {
+    public Result checkResultCode(@PathVariable("code") String code, HttpSession session) {
+        System.out.println("验证码："+code);
         String randomId = (String)session.getAttribute("emailCode");
         if (!Utils.isEmpty(code)&&!Utils.isEmpty(randomId)) {
             throw new ParameterException("验证码为空，是否输入或请检查系统是否异常");

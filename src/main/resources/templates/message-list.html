@@ -5,91 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>留言列表</title>
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <div th:if="${session.userInfo.roleId}==1" class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 学生端</div>
+        <div th:if="${session.userInfo.roleId}==2" class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 教师端</div>
+        <div th:if="${session.userInfo.roleId}==3" class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 管理端</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
+            <div th:if="${role} == 'admin'">
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">学生管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/student/list">学生列表</a></dd>
+                        <dd><a onclick="layer_show('添加学生','/student/add.html',500,590)">添加学生</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">教师管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/teacher/list">教师列表</a></dd>
+                        <dd><a onclick="layer_show('添加教师','/teacher/add.html',500,590)">添加教师</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item ">
+                    <a class="" href="javascript:;">课程管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/course/list/admin">课程列表</a></dd>
+                        <dd><a onclick="layer_show('添加教师','/course/add.html',500,590)">添加课程</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a th:href="@{'/message/list/admin'}">留言列表</a></dd>
+                    </dl>
+                </li>
+            </div>
+            <div th:if="${role} == 'teacher'">
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">课程管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="/course/list/teacher">课程列表</a></dd>
+                        <dd><a onclick="layer_show('添加课程','/course/add.html',500,320)">添加课程</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a th:href="@{'/message/list/teacher'}">留言列表</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('添加留言','/message/add.html/teacher/[[${session.userInfo.id}]]','700','500');">添加留言</a>
+                        </dd>
+                    </dl>
+                </li>
+            </div>
+            <div th:if="${role} == 'student'">
+                <li class="layui-nav-item">
+                    <a th:href="@{'/course/list/studentPage?studentId='+${session.userInfo.number}}" class="">课程列表</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">留言管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a th:href="@{'/message/list/student'}">留言列表</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('添加留言','/message/add.html/student/[[${session.userInfo.id}]]','700','500');">添加留言</a>
+                        </dd>
+                    </dl>
+                </li>
+            </div>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <img th:if="${session.userInfo.roleId}==1" th:src="@{/static/common/images/t1.jpg}" class="layui-nav-img">
+                    <img th:if="${session.userInfo.roleId}==2" th:src="@{/static/common/images/t2.jpg}" class="layui-nav-img">
+                    <img th:if="${session.userInfo.roleId}==3" th:src="@{/static/common/images/t3.jpg}" class="layui-nav-img">
                     <span th:text="${session.userInfo.name}"></span>
                 </a>
                 <dl class="layui-nav-child">
                     <div th:if="${role} == 'admin'">
-                        <dd><a th:onclick="layer_show('基本资料','/employee/info?id=[[${session.userInfo.id}]]&roleName=superAdmin','800','560');">基本资料</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('基本资料','/employee/info?id=[[${session.userInfo.id}]]&roleName=superAdmin','800','560');">基本资料</a>
+                        </dd>
                     </div>
                     <div th:if="${role} == 'teacher'">
-                        <dd><a th:onclick="layer_show('基本资料','/teacher/info?id=[[${session.userInfo.id}]]','800','560');">基本资料</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('基本资料','/teacher/info?id=[[${session.userInfo.id}]]','800','560');">基本资料</a>
+                        </dd>
                     </div>
                     <div th:if="${role} == 'student'">
-                        <dd><a th:onclick="layer_show('基本资料','/student/info?id=[[${session.userInfo.id}]]','800','560');">基本资料</a></dd>
+                        <dd>
+                            <a th:onclick="layer_show('基本资料','/student/info?id=[[${session.userInfo.id}]]','800','560');">基本资料</a>
+                        </dd>
                     </div>
                 </dl>
             </li>
             <li class="layui-nav-item"><a th:href="@{'/logout'}">退出登录</a></li>
         </ul>
     </div>
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="test">
-                <div th:if="${role} == 'admin'">
-                    <li class="layui-nav-item">
-                        <a class="" href="javascript:;">学生管理</a>
-                        <dl class="layui-nav-child">
-                            <dd><a href="/student/list">学生列表</a></dd>
-                            <dd><a onclick="layer_show('添加学生','/student/add.html',500,590)">添加学生</a></dd>
-                        </dl>
-                    </li>
-                    <li class="layui-nav-item">
-                        <a href="javascript:;">教师管理</a>
-                        <dl class="layui-nav-child">
-                            <dd><a href="/teacher/list">教师列表</a></dd>
-                            <dd><a onclick="layer_show('添加教师','/teacher/add.html',500,590)">添加教师</a></dd>
-                        </dl>
-                    </li>
-                    <li class="layui-nav-item ">
-                        <a class="" href="javascript:;">课程管理</a>
-                        <dl class="layui-nav-child">
-                            <dd><a href="/course/list/admin">课程列表</a></dd>
-                            <dd><a onclick="layer_show('添加教师','/course/add.html',500,590)">添加课程</a></dd>
-                        </dl>
-                    </li>
-                </div>
-                <div th:if="${role} == 'teacher'">
-                    <li class="layui-nav-item">
-                        <a class="" href="javascript:;">课程管理</a>
-                        <dl class="layui-nav-child">
-                            <dd><a href="/course/list/teacher">课程列表</a></dd>
-                            <dd><a onclick="layer_show('添加课程','/course/add.html',500,320)">添加课程</a></dd>
-                        </dl>
-                    </li>
-                </div>
-                <div th:if="${role} == 'student'">
-                    <li class="layui-nav-item">
-                        <a th:href="@{'/course/list/studentPage?studentId='+${session.userInfo.number}}" class="">课程列表</a>
-                    </li>
-                </div>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a class="" href="javascript:;">留言管理</a>
-                    <dl class="layui-nav-child">
-                        <dd><a th:href="@{'/message/list/'+${role}}" class="layui-this">留言列表</a></dd>
-                        <div th:if="${role} != 'admin'">
-                            <dd>
-                                <a th:onclick="layer_show('添加留言','/message/add.html/'+[[${role}]]+'/[[${session.userInfo.id}]]','700','500');">添加留言</a>
-                            </dd>
-                        </div>
-                    </dl>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="layui-body">
+    <div class="main-body">
         <!-- 内容主体区域 -->
         <div style="padding: 20px; background-color: #F2F2F2;">
             <div class="layui-row layui-col-space15">
@@ -99,7 +120,7 @@
 							<span class="layui-breadcrumb" lay-separator="/">
 								<a th:href="@{'/index.html?role='+${role}}">首页</a>
 								<a>留言管理</a>
-								<a th:href="@{'/message/list/'+${role}}" ><cite>留言列表</cite></a>
+								<a th:href="@{'/message/list/'+${role}}"><cite>留言列表</cite></a>
 							</span>
                         </div>
                         <div class="layui-card-body">
@@ -161,7 +182,7 @@
 <script>
     var role = document.getElementById("role").value;
     var userId = document.getElementById("userId").value;
-    layui.use(['table', 'element', 'laydate','layer'], function () {
+    layui.use(['table', 'element', 'laydate', 'layer'], function () {
         var table = layui.table;
         var layer = layui.layer;
         var laydate = layui.laydate;
@@ -209,7 +230,7 @@
             id: 'testReload',
             cols: [[{type: 'checkbox'},
                 {field: 'id', width: 70, title: 'ID', sort: true},
-                {field: 'title', width: 350, title: '标题'},
+                {field: 'title', width: 590, title: '标题'},
                 {field: 'type', width: 80, title: '类型'},
                 {field: 'author', title: '作者', width: 120},
                 {field: 'status', width: 80, title: '状态', sort: true},
@@ -241,8 +262,7 @@
                     arr.push(v.id)
                 });
                 layer.confirm('真的要删除这些数据吗？', function (index) {
-                    deleted(my_localhost + "/message/deleteByIds/" + arr, '留言');
-                    obj.del();
+                    deleted(my_localhost + "/message/deleteByIds?ids=" + arr, '留言');
                     layer.close(index);
                 });
 

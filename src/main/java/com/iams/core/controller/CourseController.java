@@ -12,6 +12,7 @@ import com.iams.core.pojo.GiveLessons;
 import com.iams.core.service.BaseService;
 import com.iams.core.service.CourseService;
 import com.iams.core.service.GiveLessonsService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,19 +45,17 @@ public class CourseController {
 
 
     @RequestMapping("/list/studentPage")
+    @RequiresPermissions("course:studentPage:page")
     public String studentCourseList(String studentId, Model model) {
         if (!Utils.isEmpty(studentId)) {
             return "404";
         }
-//        IPage<CourseDto> iPage = courseService.findCourseByStudentId(condition, studentId, pageNum, pageSize);
-//        model.addAttribute("data",iPage.getRecords());// 查询到的数据往前端传
-//        model.addAttribute("search",condition);// 模糊查询条件值
-//        model.addAttribute("size",iPage.getTotal());//总的数据条数
+        model.addAttribute("studentId",studentId);
         return "/student/course-list";
     }
 
     @RequestMapping("/list/{role}")
-    //@RequiresPermissions("course:list:page")
+    @RequiresPermissions("course:list:page")
     public String list(@PathVariable("role") String role) {
         if (Utils.isEmpty(role) && role.equals("admin")) {
             return "/admin/course-list";
@@ -68,6 +67,7 @@ public class CourseController {
     }
 
     @RequestMapping("/studentList.html/{id}")
+    @RequiresPermissions("course:studentList:page")
     public String studentListPage(@PathVariable("id") Integer id, Model model) {
         CourseDto dto = courseService.find(id);
         if (dto != null) {
@@ -82,11 +82,13 @@ public class CourseController {
     }
 
     @RequestMapping("/add.html")
+    @RequiresPermissions("course:adminAdd:page")
     public String add() {
         return "/admin/course-add";
     }
 
     @RequestMapping("/add.html/{id}")
+    @RequiresPermissions("course:teacherAdd:page")
     public String addForTeacher(@PathVariable("id") String teacherId, Model model) {
         if(!Utils.isEmpty(teacherId)){
             return "404";
@@ -96,6 +98,7 @@ public class CourseController {
     }
 
     @RequestMapping("/student/add.html")
+    @RequiresPermissions("course:studentAdd:page")
     public String addForStudent(String studentId, Model model) {
         if(!Utils.isEmpty(studentId)){
             return "404";
@@ -105,6 +108,7 @@ public class CourseController {
     }
 
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("course:update:page")
     public String update(@PathVariable("id") Integer id, Model model) {
         CourseDto courseDto = courseService.find(id);
         model.addAttribute("course", courseDto);
@@ -112,6 +116,7 @@ public class CourseController {
     }
 
     @RequestMapping("/addStudent.html/{id}")
+    @RequiresPermissions("course:addStudent:page")
     public String addStudent(@PathVariable("id") Integer id, Model model) {
         CourseDto courseDto = courseService.find(id);
         model.addAttribute("course", courseDto);
@@ -134,6 +139,7 @@ public class CourseController {
     }
 
     @RequestMapping("/updateTh/{id}")
+    @RequiresPermissions("course:updateTh:page")
     public String updateTh(@PathVariable("id") Integer id, Model model) {
         CourseDto courseDto = courseService.find(id);
         model.addAttribute("course", courseDto);
@@ -194,6 +200,7 @@ public class CourseController {
 
     @ResponseBody
     @RequestMapping("/delete/{id}")
+    @RequiresPermissions("course:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if (courseService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
@@ -202,9 +209,13 @@ public class CourseController {
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping("/deleteByIds/{ids}")
+    @RequestMapping("/deleteByIds")
     @ResponseBody
-    public Result delete(@PathVariable("ids") String ids) {
+    @RequiresPermissions("course:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
         if(BaseService.deleteByIds(ids,courseMapper)<=0){
             return ResultGenerator.genFailResult("删除失败！"+ids);
         }

@@ -9,9 +9,13 @@ import com.iams.core.pojo.AssignmentTopic;
 import com.iams.core.pojo.SubjectiveTopic;
 import com.iams.core.service.AssignmentTopicService;
 import com.iams.core.service.SubjectiveTopicService;
+import com.iams.core.service.impl.AssignmentTopicServiceImpl;
+import com.iams.core.service.impl.SubjectiveTopicServiceImpl;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,6 +45,7 @@ public class SubjectiveTopicController {
      * @return
      */
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("subjectiveTopic:update:page")
     private String update( @PathVariable("id") Integer id, Model model){
         if(!Utils.isEmpty(id)){
             return "404";
@@ -52,7 +57,8 @@ public class SubjectiveTopicController {
     @RequestMapping("/add")
     @ResponseBody
     private Result add(SubjectiveTopic subjectiveTopic) {
-        System.out.println("数据：" + subjectiveTopic);
+        if(ObjectUtils.isEmpty(stService))stService=new SubjectiveTopicServiceImpl();
+        if(ObjectUtils.isEmpty(atService))atService=new AssignmentTopicServiceImpl();
         if (stService.insert(subjectiveTopic) > 0) {//添加题目
             AssignmentTopic at = new AssignmentTopic()
                     .setAssignmentId(subjectiveTopic.getAssignmentId())

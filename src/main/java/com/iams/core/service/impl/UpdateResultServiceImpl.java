@@ -32,21 +32,6 @@ import java.util.List;
 public class UpdateResultServiceImpl implements UpdateResultService {
 
     @Autowired
-    private SingleService singleService;
-
-    @Autowired
-    private MultitermService multitermService;
-
-    @Autowired
-    private JudgmentService judgmentService;
-
-    @Autowired
-    private CompletionService completionService;
-
-    @Autowired
-    private SubjectiveService subjectiveService;
-
-    @Autowired
     private AssignmentService assignmentService;
 
     @Autowired

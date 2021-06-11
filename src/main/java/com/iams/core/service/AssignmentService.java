@@ -21,6 +21,14 @@ public interface AssignmentService{
     Assignment find(Integer id);
 
     /**
+     * 查询时间范围内的全部作业
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    List<Assignment> find(String startTime, String endTime);
+
+    /**
      * 根据学号和课程号查询该学生的该课程所有的作业
      * @param courseNumber 课程号
      * @param studentNumber 学号

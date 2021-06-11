@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.iams.common.constant.IamsConstants;
 import com.iams.common.exception.ParameterException;
+import com.iams.common.util.SpringUtil;
 import com.iams.common.util.Utils;
 import com.iams.core.mapper.ObjectiveTopicMapper;
 import com.iams.core.pojo.ObjectiveTopic;
@@ -25,7 +26,7 @@ import java.util.List;
 public class ObjectiveTopicServiceImpl implements ObjectiveTopicService {
 
     @Autowired
-    private ObjectiveTopicMapper otMapper;
+    private ObjectiveTopicMapper objectiveTopicMapper;
 
     @Override
     public ObjectiveTopic find(Integer id) {
@@ -52,31 +53,34 @@ public class ObjectiveTopicServiceImpl implements ObjectiveTopicService {
                 wrapper.eq(ObjectiveTopic::getTurnout,objectiveTopic.getTurnout());
             }
         }
-        return otMapper.selectList(wrapper);
+        return objectiveTopicMapper.selectList(wrapper);
     }
 
     @Override
     public int insert(ObjectiveTopic objectiveTopic) {
+        if(objectiveTopicMapper==null){
+            objectiveTopicMapper = (ObjectiveTopicMapper) SpringUtil.getBean("objectiveTopicMapper");
+        }
         objectiveTopic.setId(null);
         objectiveTopic.setDeleted(IamsConstants.DELETED);
-        return otMapper.insert(objectiveTopic);
+        return objectiveTopicMapper.insert(objectiveTopic);
     }
 
     @Override
     public int update(ObjectiveTopic objectiveTopic) {
         sel(objectiveTopic.getId());
-        return otMapper.updateById(objectiveTopic);
+        return objectiveTopicMapper.updateById(objectiveTopic);
     }
 
     @Override
     public int delete(Integer id) {
         sel(id);
-        return otMapper.deleteById(id);
+        return objectiveTopicMapper.deleteById(id);
     }
 
     private ObjectiveTopic sel(Integer id){
         Utils.isEmpty(id,"查询客观题失败，id不能为空或者小于等于0");
-        ObjectiveTopic objectiveTopic = otMapper.selectById(id);
+        ObjectiveTopic objectiveTopic = objectiveTopicMapper.selectById(id);
         if(objectiveTopic==null){
             throw new ParameterException("查询失败，客观题为空！！！，id: "+id);
         }

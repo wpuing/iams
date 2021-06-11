@@ -17,17 +17,35 @@
             line-height: 20px;
             border-radius: 4px;
         }
+        .layui-layout-body {
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <div class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 超级端</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">员工管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/employee/list">员工列表</a></dd>
+                    <dd><a onclick="layer_show('添加员工','/employee/add.html',500,590)">添加员工</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">权限管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:;">权限列表</a></dd>
+                </dl>
+            </li>
+        </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <img th:src="@{/static/common/images/t4.jpg}" class="layui-nav-img">
                     <span th:if="session.userInfo!=null"><span th:text="${session.userInfo?.name}">未认证</span></span>
                 </a>
                 <dl class="layui-nav-child">
@@ -37,29 +55,7 @@
             <li class="layui-nav-item"><a th:href="@{/logout}">退出登录</a></li>
         </ul>
     </div>
-
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <li class="layui-nav-item">
-                    <a class="" href="javascript:;">员工管理</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/employee/list">员工列表</a></dd>
-                        <dd><a onclick="layer_show('添加员工','/employee/add.html',500,590)">添加员工</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a class="" href="javascript:;">权限管理</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="javascript:;" class="layui-this">权限列表</a></dd>
-                    </dl>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="layui-body">
+    <div class="main-body">
         <!-- 内容主体区域 -->
         <div style="padding: 20px; background-color: #F2F2F2;">
             <div class="layui-row layui-col-space15">
@@ -157,11 +153,11 @@
                                             <table th:id="'treeTable'+${permissionDto.type}"
                                                    class="table table-striped table-bordered table-hover layui-table">
                                                 <colgroup>
-                                                    <col width="240">
+                                                    <col width="260">
                                                     <col width="80">
                                                     <col width="80">
-                                                    <col width="255">
-                                                    <col width="255">
+                                                    <col width="245">
+                                                    <col width="245">
                                                     <col width="90">
                                                     <col width="200">
                                                 </colgroup>
@@ -213,6 +209,9 @@
                                             <h1 style="text-align: center;margin-top: 50px;">
                                                 拥有至高无上的权利！SUPREME POWER
                                             </h1>
+                                            <div style="width: 100px; margin: auto;">
+                                                <button onclick="updatePermission()" style="margin-top: 10px;" type="button" class="layui-btn layui-btn-radius layui-btn-normal">更新权限</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -258,6 +257,18 @@
         }
     }
 
+    /**
+     * 更新超级管理员的权限
+     */
+    function updatePermission(){
+        $.post(my_localhost+'/permission/updatePermission', function (data) {
+            if(data.code=='200'){//验证成功
+                layui.layer.alert('更新超级管理员的权限成功！');
+            }else{
+                layui.layer.alert(data.message);
+            }
+        });
+    }
 
     // 加载表格
     $("#treeTableALL").treetable({

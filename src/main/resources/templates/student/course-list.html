@@ -5,18 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>学生课程列表</title>
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <div class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 学生端</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">
+                <a th:href="@{'/course/list/studentPage?studentId='+${studentId}}">课程列表</a>
+            </li>
+            <li class="layui-nav-item">
+                <a class="" href="javascript:;">留言管理</a>
+                <dl class="layui-nav-child">
+                    <dd><a th:href="@{'/message/list/student'}">留言列表</a></dd>
+                    <dd>
+                        <a th:onclick="layer_show('添加留言','/message/add.html/student/[[${session.userInfo.id}]]','700','590')">添加留言</a>
+                    </dd>
+                </dl>
+            </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
+                <input type="hidden" id="studentId" th:value="${studentId}">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <img th:src="@{/static/common/images/t1.jpg}" class="layui-nav-img">
                     <span th:if="session.userInfo!=null"><span th:text="${session.userInfo?.name}">未认证</span></span>
                 </a>
                 <dl class="layui-nav-child">
@@ -26,28 +44,7 @@
             <li class="layui-nav-item"><a th:href="@{'/logout'}">退出登录</a></li>
         </ul>
     </div>
-    <div class="layui-side layui-bg-black">
-        <input type="hidden" id="studentId" value="stu1v0001">
-        <input type="hidden" id="total" th:value="${total}">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="test">
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a th:href="@{'/course/list/studentPage?studentId=stu1v0001'}" class="layui-this">课程列表</a>
-                </li>
-                <li class="layui-nav-item">
-                    <a class="" href="javascript:;">留言管理</a>
-                    <dl class="layui-nav-child">
-                        <dd><a th:href="@{'/message/list/student'}">留言列表</a></dd>
-                        <dd>
-                            <a th:onclick="layer_show('添加留言','/message/add.html/student/2','700','590');">添加留言</a>
-                        </dd>
-                    </dl>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="layui-body">
+    <div class="main-body">
         <!-- 内容主体区域 -->
         <div style="padding: 20px; background-color: #F2F2F2;">
             <div class="layui-row layui-col-space15">
@@ -61,7 +58,7 @@
                         </div>
                         <div class="layui-card-body">
                             <div class="demoTable">
-                                <button onclick="layer_show('添加课程','/course/student/add.html?studentId=stu1v0001',500,250)"
+                                <button th:onclick="layer_show('添加课程','/course/student/add.html?studentId='+[[${studentId}]],500,250)"
                                         class="layui-btn layui-btn-normal">添加课程</button>
                             </div>
                         </div>
@@ -128,7 +125,7 @@
                                 ' <sapn style="float: right;"><span>教师：</span><span>' + item.teacherName + '</span></sapn>' +
                                 '</p>' +
                                 ' <div>' +
-                                '<a href="/assignment//list/student?courseNumber='+item.courseNumber+'&studentNumber=stu1v0001" style="margin-left: 17px;" title="查看作业列表"><button type="button" ' +
+                                '<a href="/assignment/list/student?courseNumber='+item.courseNumber+'&studentNumber=stu1v0001" style="margin-left: 17px;" title="查看作业列表"><button type="button" ' +
                                 'class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs" style="margin-left: 75px;">查看作业</button></a>' +
                                 '<button type="button" class="layui-btn layui-btn-primary layui-border-blue layui-btn-xs" ' +
                                 'onclick="del(\'/giveLessons/delete/\','+item.giveId+'\,\'学生课程\''+')" '+

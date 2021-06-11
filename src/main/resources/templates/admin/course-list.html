@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>管理员-课程列表</title>
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo">iams - 网络作业管理系统</div>
+        <div class="layui-logo" style="font-weight: bold;color: #FFFFFF;">网络作业管理系统 - 管理端</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <img th:src="@{/static/common/images/t3.jpg}" class="layui-nav-img">
                     <span th:if="session.userInfo!=null"><span th:text="${session.userInfo?.name}">未认证</span></span>
                 </a>
                 <dl class="layui-nav-child">
@@ -102,6 +107,7 @@
                     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="upload">上传</a>
                     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="addStu">添加学生</a>
                     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="findStu">查看学生</a>
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="findAssignment">查看作业</a>
                     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="findTh">归属管理</a>
                     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
                     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
@@ -153,7 +159,7 @@
                 {field: 'giveId', width: 60, title: '关系ID', hide: true},
                 {field: 'teacherNumber', width: 120, title: '教师编号', sort: true},
                 {field: 'teacherName', title: '教师名', width: 120},
-                {fixed: 'right', title: '操作', width: 390, align: 'center', toolbar: '#barDemo'}]
+                {fixed: 'right', title: '操作', width: 490, align: 'center', toolbar: '#barDemo'}]
             ]
         });
         table.on('tool(demo)', function (obj) {
@@ -162,7 +168,7 @@
                 layer.confirm('真的删除该数据吗？', function (index) {
                     deleted(my_localhost + "/course/delete/" + data.courseId, '课程');
                     obj.del();
-                    layer.close(emp);
+                    layer.close(index);
                 });
             } else if (obj.event === 'edit') {
                 layer_show("修改课程", my_localhost + "/course/update.html/" + data.courseId, 500, 320);
@@ -172,6 +178,8 @@
                 layer_show("课程学生列表", my_localhost + "/course/studentList.html/" + data.courseId, 570, 590);
             } else if (obj.event === 'addStu') {
                 layer_show("添加课程学生", my_localhost + "/course/addStudent.html/" + data.courseId, 500, 590);
+            } else if (obj.event === 'findAssignment') {
+                window.open(my_localhost + "/assignment/list?courseNumber="+data.courseNumber+"&teacherId="+ data.teacherNumber);
             } else if (obj.event === 'upload') {
                 uploadPage(data.giveId);//弹出上传窗口
             }
@@ -185,8 +193,7 @@
                     arr.push(v.courseId)
                 });
                 layer.confirm('真的要删除这些数据吗？', function (index) {
-                    deleted(my_localhost + "/course/deleteByIds/" + arr, '课程');
-                    obj.del();
+                    deleted(my_localhost + "/course/deleteByIds?ids=" + arr, '课程');
                     layer.close(index);
                 });
             }

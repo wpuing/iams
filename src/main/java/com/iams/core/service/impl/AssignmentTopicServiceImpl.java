@@ -3,6 +3,7 @@ package com.iams.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.iams.common.exception.ParameterException;
+import com.iams.common.util.SpringUtil;
 import com.iams.common.util.Utils;
 import com.iams.core.mapper.AssignmentTopicMapper;
 import com.iams.core.pojo.AssignmentTopic;
@@ -50,7 +51,9 @@ public class AssignmentTopicServiceImpl implements AssignmentTopicService {
 
     @Override
     public int insert(AssignmentTopic assignmentTopic) {
-
+        if(assignmentTopicMapper==null){
+            assignmentTopicMapper = (AssignmentTopicMapper) SpringUtil.getBean("assignmentTopicMapper");
+        }
         return assignmentTopicMapper.insert(assignmentTopic);
     }
 

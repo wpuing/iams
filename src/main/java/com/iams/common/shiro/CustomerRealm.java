@@ -134,8 +134,12 @@ public class CustomerRealm extends AuthorizingRealm {
         if (principalUserInfo.getRole().equals("teacher")) {//教师
             teacherList = teacherService.find(principalUserInfo.getUsername());
         }
-        if (principalUserInfo.getRole().equals("admin") || principalUserInfo.getRole().equals("superAdmin")) {//员工
-            employeeList = employeeService.find(principalUserInfo.getUsername());
+        if (principalUserInfo.getRole().equals("admin") ) {//员工
+            employeeList = employeeService.find(principalUserInfo.getUsername(),3);
+            if(CollectionUtils.isEmpty(employeeList)) employeeList = employeeService.find(principalUserInfo.getUsername(),4);
+        }
+        if ( principalUserInfo.getRole().equals("superAdmin")) {//员工
+            employeeList = employeeService.find(principalUserInfo.getUsername(),4);
         }
         return IamsUtils.extract(principalUserInfo, studentList, teacherList, employeeList, flag);
     }

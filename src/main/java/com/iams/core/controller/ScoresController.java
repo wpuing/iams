@@ -14,6 +14,7 @@ import com.iams.core.dto.scores.StudentScoresDetails;
 import com.iams.core.dto.scores.StudentScoresDto;
 import com.iams.core.pojo.*;
 import com.iams.core.service.*;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,6 +61,7 @@ public class ScoresController {
     private AssignmentScoresService assignmentScoresService;//作业情况
 
     @RequestMapping("/list")
+    @RequiresPermissions("scores:teacherList:page")
     public String list(Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";
@@ -69,6 +71,7 @@ public class ScoresController {
     }
 
     @RequestMapping("/update.html")
+    @RequiresPermissions("scores:update:page")
     public String update(Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";
@@ -86,6 +89,7 @@ public class ScoresController {
      * @return
      */
     @RequestMapping("/updateTopicScore.html")
+    @RequiresPermissions("scores:updateTopicScore:page")
     public String updateTopic(Integer assignmentId, String studentNumber, Integer topicId, Integer typeId
             , Model model) {
         if (!Utils.isEmpty(assignmentId) || !Utils.isEmpty(studentNumber)
@@ -106,6 +110,7 @@ public class ScoresController {
     }
 
     @RequestMapping("/detail.html")
+    @RequiresPermissions("scores:detail:page")
     public String detail(Integer id, String studentNumber, Model model) {
         if (!Utils.isEmpty(id) || !Utils.isEmpty(studentNumber)) {
             return "404";
@@ -116,7 +121,9 @@ public class ScoresController {
         model.addAttribute("studentNumber", studentNumber);
         return "teacher/student-topic-result-info";
     }
+
     @RequestMapping("/assignmentDetail.html")
+    @RequiresPermissions("scores:assignmentDetail:page")
     public String assignmentDetail(Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";

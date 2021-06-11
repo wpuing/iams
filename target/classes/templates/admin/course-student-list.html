@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>管理员-课程学生列表</title>
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout">
@@ -95,8 +100,7 @@
                     ids.push(v.giveId);
                 });
                 layer.confirm('真的要删除这些数据吗？', function (index) {
-                    deleted(my_localhost + "/giveLessons/deleteByIds/" + ids, '课程学生');
-                    obj.del();
+                    deleted(my_localhost + "/giveLessons/deleteByIds?ids=" + ids, '课程学生');
                     layer.close(index);
                 });
             }

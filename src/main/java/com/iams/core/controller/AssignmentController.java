@@ -11,8 +11,10 @@ import com.iams.core.dto.scores.AssignmentScoresDetails;
 import com.iams.core.dto.student.AssignmentDetails;
 import com.iams.core.dto.student.AssignmentStudentDetails;
 import com.iams.core.dto.student.StudentTaskDto;
+import com.iams.core.mapper.AssignmentMapper;
 import com.iams.core.pojo.*;
 import com.iams.core.service.*;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -73,7 +75,11 @@ public class AssignmentController {
     @Autowired
     private UpdateResultService updateResultService;
 
+    @Autowired
+    private AssignmentMapper assignmentMapper;
+
     @RequestMapping("/list/student")
+    @RequiresPermissions("assignment:studentList:page")
     public String studentList(String courseNumber, String studentNumber, Model model) {
         Course course = courseService.find(courseNumber);
         if (!Utils.isEmpty(courseNumber) || !Utils.isEmpty(studentNumber) || course == null) {
@@ -84,10 +90,11 @@ public class AssignmentController {
         model.addAttribute("course", course);
         model.addAttribute("unfinishedList", unfinishedList);
         model.addAttribute("finishList", finishList);
-        return "/student/course-assignment-list";
+        return "/student/co-95urse-assignment-list";
     }
 
     @RequestMapping("/list")
+    @RequiresPermissions("assignment:list:page")
     public String list(String courseNumber, String teacherId, Model model) {
         if (!Utils.isEmpty(courseNumber) || !Utils.isEmpty(teacherId)) {
             return "404";
@@ -98,6 +105,7 @@ public class AssignmentController {
     }
 
     @RequestMapping("/findById.html/{id}")
+    @RequiresPermissions("assignment:findById:page")
     public String findById(@PathVariable("id") Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";
@@ -119,6 +127,7 @@ public class AssignmentController {
      * @return
      */
     @RequestMapping("/student/info")
+    @RequiresPermissions("assignment:studentInfo:page")
     public String studentAssignmentInfo1(Integer id, String studentNumber, Model model) {
         if (!Utils.isEmpty(id) || !Utils.isEmpty(studentNumber)) {
             return "404";
@@ -147,6 +156,7 @@ public class AssignmentController {
      * @return
      */
     @RequestMapping("/student/scores")
+    @RequiresPermissions("assignment:studentsScores:page")
     public String studentAssignmentScores(Integer id, String studentNumber, Model model) {
         if (!Utils.isEmpty(id) || !Utils.isEmpty(studentNumber)) {
             return "404";
@@ -155,7 +165,6 @@ public class AssignmentController {
         Float subScore = assignmentService.findScore(id, IamsConstants.TOPIC_TYPE[4], false);//主观题分数
         Double score = (objScore == null ? 0.0 : objScore) + (subScore == null ? 0.0 : subScore);
         AssignmentScoresDetails details = updateResultService.findScores(id, studentNumber);
-        System.out.println("选择题的长度："+details.getSingleChoiceList());
         Scores scores = scoresService.find(studentNumber, id);
         Float studentScores = new  Float(0.0);
         if(!ObjectUtils.isEmpty(scores)) studentScores = scores.getScore();
@@ -166,6 +175,7 @@ public class AssignmentController {
     }
 
     @RequestMapping("/add.html/{courseId}/{teacherId}")
+    @RequiresPermissions("assignment:add:page")
     public String add(@PathVariable("courseId") String courseId, @PathVariable("teacherId") String teacherId, Model model) {
         if (!Utils.isEmpty(courseId) || !Utils.isEmpty(teacherId)) {
             return "404";
@@ -177,13 +187,13 @@ public class AssignmentController {
 
     /**
      * 添加题目
-     *
      * @param type  题目类型
      * @param id    作业id
      * @param model
      * @return
      */
     @RequestMapping("/addTopic.html/{type}/{id}")
+    @RequiresPermissions("assignment:addTopic:page")
     private String add(@PathVariable("type") String type, @PathVariable("id") Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";
@@ -213,11 +223,10 @@ public class AssignmentController {
         Utils.isEmpty(name, "作业文件名不能为空！！！");
         FileUtils.downloadFile(response, IamsConstants.ASSIGNMENT_FILE_PATH, name,
                 "temp" + "." + strArray[strArray.length - 1]);
-
     }
 
-
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("assignment:update:page")
     public String update(@PathVariable("id") Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";
@@ -228,6 +237,7 @@ public class AssignmentController {
     }
 
     @RequestMapping("/updateIssue.html")
+    @RequiresPermissions("assignment:updateIssue:page")
     public String updateIssue(Integer id, Model model) {
         if (!Utils.isEmpty(id)) {
             return "404";
@@ -244,12 +254,12 @@ public class AssignmentController {
 
     /**
      * 学生提交答案
-     *
      * @param studentScantron 答题卡
      * @return
      */
     @RequestMapping("/submitResult")
     @ResponseBody
+    @RequiresPermissions("assignment:submitResult:operation")
     public Result submitResult(StudentScantron studentScantron) {
         if (!Utils.isEmpty(studentScantron.getTopicAnswerList())) {
             return ResultGenerator.genFailResult("答题内容为空！");
@@ -312,6 +322,7 @@ public class AssignmentController {
      * @return
      */
     @RequestMapping("/issue.html")
+    @RequiresPermissions("assignment:issue:page")
     public String issue(String courseId, String teacherId, Integer id, Model model) {
         if (!Utils.isEmpty(courseId) || !Utils.isEmpty(teacherId) || !Utils.isEmpty(id)) {
             return "404";
@@ -397,13 +408,12 @@ public class AssignmentController {
      */
     @RequestMapping("/addIssueByCAndS")
     @ResponseBody
+    @RequiresPermissions("assignment:addIssueByCAndS:operation")
     public Result addIssueByCAndS(String courseId, String teacherId,Integer id) {
         if (!Utils.isEmpty(courseId) || !Utils.isEmpty(teacherId) || !Utils.isEmpty(id)) {
             return ResultGenerator.genFailResult("参数缺失，请检查！");
         }
-        GiveLessons g = new GiveLessons()
-                .setTeacherId(teacherId)
-                .setCourseId(courseId);
+        GiveLessons g = new GiveLessons().setTeacherId(teacherId).setCourseId(courseId);
         List<GiveLessons> giveLessonsList = giveLessonsService.find(g, false);//拿到课程关系
         //提取学号
         List<String> studentNumbers = giveLessonsList.stream().map(GiveLessons::getStudentId).collect(Collectors.toList());
@@ -438,6 +448,7 @@ public class AssignmentController {
 
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("assignment:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if (assignmentService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
@@ -445,8 +456,22 @@ public class AssignmentController {
         return ResultGenerator.genSuccessResult();
     }
 
+    @RequestMapping("/deleteByIds")
+    @ResponseBody
+    @RequiresPermissions("assignment:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
+        if(BaseService.deleteByIds(ids,assignmentMapper)<=0){
+            return ResultGenerator.genFailResult("删除失败！"+ids);
+        }
+        return ResultGenerator.genSuccessResult();
+    }
+
     @RequestMapping("/deleteTopic/{id}")
     @ResponseBody
+    @RequiresPermissions("assignment:deleteTopic:operation")
     public Result deleteTopic(@PathVariable("id") Integer id) {
         if (assignmentTopicService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);

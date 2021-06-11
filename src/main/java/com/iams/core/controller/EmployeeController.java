@@ -11,6 +11,7 @@ import com.iams.core.mapper.EmployeeMapper;
 import com.iams.core.pojo.Employee;
 import com.iams.core.service.BaseService;
 import com.iams.core.service.EmployeeService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,16 +40,19 @@ public class EmployeeController {
 
 
     @RequestMapping("/list")
+    @RequiresPermissions("employee:list:page")
     public String list(){
         return "/superAdmin/emp-list";
     }
 
     @RequestMapping("/add.html")
+    @RequiresPermissions("employee:add:page")
     public String add(){
         return "/superAdmin/emp-add";
     }
 
     @RequestMapping("/info")
+    @RequiresPermissions("employee:info:page")
     public String info(Integer id,String roleName,Model model){
         if(!Utils.isEmpty(roleName)&&!Utils.isEmpty(id)){
             return "404";
@@ -62,6 +66,7 @@ public class EmployeeController {
     }
 
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("employee:update:page")
     public String update(@PathVariable("id") Integer id, Model model){
         EmployeeDto emp = employeeService.find(id);
         model.addAttribute("emp", emp);
@@ -102,6 +107,7 @@ public class EmployeeController {
 
     @RequestMapping("/updateEmail")
     @ResponseBody
+    @RequiresPermissions("employee:updateEmail:operation")
     public Result updateEmail(Integer id,String email) {
         Utils.isEmpty(email,"修改的邮箱不能为空！！！");
         Employee employee = employeeService.findById(id);
@@ -114,6 +120,7 @@ public class EmployeeController {
 
     @RequestMapping("/updatePassword")
     @ResponseBody
+    @RequiresPermissions("employee:updatePassword:operation")
     public Result updatePassword(Integer id,String password) {
         Utils.isEmpty(password,"修改的密码不能为空！！！");
         Employee employee = employeeService.findById(id);
@@ -126,6 +133,7 @@ public class EmployeeController {
 
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("employee:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if(employeeService.delete(id)<=0){
             return ResultGenerator.genFailResult("删除失败！id:"+id);
@@ -133,9 +141,13 @@ public class EmployeeController {
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping("/deleteByIds/{ids}")
+    @RequestMapping("/deleteByIds")
     @ResponseBody
-    public Result delete(@PathVariable("ids") String ids) {
+    @RequiresPermissions("employee:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
         if(BaseService.deleteByIds(ids,employeeMapper)<=0){
             return ResultGenerator.genFailResult("删除失败！"+ids);
         }

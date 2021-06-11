@@ -84,8 +84,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> find(String condition) {
+    public List<Employee> find(String condition,Integer type) {
         LambdaQueryWrapper<Employee> wrapper = Wrappers.<Employee>lambdaQuery();
+        wrapper.eq(Employee::getRoleId,type);
         wrapper.eq(Employee::getNumber,condition)
                 .or()
                 .eq(Employee::getEmail,condition);

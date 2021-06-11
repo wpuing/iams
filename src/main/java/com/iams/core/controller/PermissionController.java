@@ -7,6 +7,7 @@ import com.iams.common.util.Utils;
 import com.iams.core.dto.PermissionDto;
 import com.iams.core.pojo.Permission;
 import com.iams.core.service.PermissionService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,6 +35,7 @@ public class PermissionController {
 
 
     @RequestMapping("/list")
+    @RequiresPermissions("permission:list:page")
     public String find(Model model) {
         List<PermissionDto> permissionDtoList = permissionService.findAll();
         model.addAttribute("permissionDtoList", permissionDtoList);
@@ -41,6 +43,7 @@ public class PermissionController {
     }
 
     @RequestMapping("/all/add.html")
+    @RequiresPermissions("permission:allAdd:page")
     public String allAdd(Model model) {
         List<Permission> permissionList = permissionService.find(null, "menu");
         model.addAttribute("menuList",permissionList);
@@ -48,6 +51,7 @@ public class PermissionController {
     }
 
     @RequestMapping("/role/add.html")
+    @RequiresPermissions("permission:roleAdd:page")
     public String roleAdd(Integer roleId,Model model) {
         if(!Utils.isEmpty(roleId)){
             return "404";
@@ -61,6 +65,7 @@ public class PermissionController {
     }
 
     @RequestMapping("/update.html")
+    @RequiresPermissions("permission:update:page")
     public String allUpdate(String type,Integer id,Model model) {
         if(!Utils.isEmpty(type)||!Utils.isEmpty(id)){
             return "404";
@@ -106,8 +111,16 @@ public class PermissionController {
         return ResultGenerator.genSuccessResult();
     }
 
+    @RequestMapping("/updatePermission")
+    @ResponseBody
+    public Result updatePermission() {
+        permissionService.updatePermission();
+        return ResultGenerator.genSuccessResult();
+    }
+
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("permission:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if(permissionService.delete(id)<=0){
             return ResultGenerator.genFailResult("删除失败！id:"+id);

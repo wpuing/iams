@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>学生作业详情</title>
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <style>
+        .layui-layout-body {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body style="background-color: #F6F6F6; ">
 <h3 style="margin: 20px;display: none;" id="submit-tips">您确定提交作业吗？</h3>
@@ -80,7 +85,7 @@
     </div>
 </blockquote>
 <input id="assignmentId" th:value="${ads.assignment.id}" type="hidden"/>
-<input id="studentNumber" value="stu1v0001" type="hidden"/>
+<input id="studentNumber" th:value="${session.userInfo.number}" type="hidden"/>
 <fieldset class="layui-elem-field" style="margin: 50px 200px 0 200px;">
     <fieldset class="layui-elem-field layui-field-title">
         <legend>一、单选题</legend>

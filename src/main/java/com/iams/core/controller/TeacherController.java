@@ -11,6 +11,7 @@ import com.iams.core.pojo.Teacher;
 import com.iams.core.service.BaseService;
 import com.iams.core.service.GiveLessonsService;
 import com.iams.core.service.TeacherService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,16 +44,19 @@ public class TeacherController {
     private TeacherMapper teacherMapper;
 
     @RequestMapping("/list")
+    @RequiresPermissions("teacher:list:page")
     public String teacher() {
         return "/admin/teacher-list";
     }
 
     @RequestMapping("/add.html")
+    @RequiresPermissions("teacher:add:page")
     public String teacherAdd() {
         return "/admin/teacher-add";
     }
 
     @RequestMapping("/info")
+    @RequiresPermissions("teacher:info:page")
     public String info(Integer id,Model model){
         if(!Utils.isEmpty(id)){
             return "404";
@@ -65,6 +69,7 @@ public class TeacherController {
     }
 
     @RequestMapping("/update.html/{id}")
+    @RequiresPermissions("teacher:update:page")
     public String teacherUpdate(@PathVariable("id") Integer id, Model model) {
         Teacher teacher = teacherService.find(id);
         model.addAttribute("teacher", teacher);
@@ -112,6 +117,7 @@ public class TeacherController {
 
     @RequestMapping("/updateEmail")
     @ResponseBody
+    @RequiresPermissions("teacher:updateEmail:operation")
     public Result updateEmail(Integer id,String email) {
         Utils.isEmpty(email,"修改的邮箱不能为空！！！");
         Teacher teacher = teacherService.findById(id);
@@ -124,6 +130,7 @@ public class TeacherController {
 
     @RequestMapping("/updatePassword")
     @ResponseBody
+    @RequiresPermissions("teacher:updatePassword:operation")
     public Result updatePassword(Integer id,String password) {
         Utils.isEmpty(password,"修改的密码不能为空！！！");
         Teacher teacher = teacherService.findById(id);
@@ -136,6 +143,7 @@ public class TeacherController {
 
     @RequestMapping("/delete/{id}")
     @ResponseBody
+    @RequiresPermissions("teacher:delete:operation")
     public Result delete(@PathVariable("id") Integer id) {
         if (teacherService.delete(id) <= 0) {
             return ResultGenerator.genFailResult("删除失败！id:" + id);
@@ -143,9 +151,13 @@ public class TeacherController {
         return ResultGenerator.genSuccessResult();
     }
 
-    @RequestMapping("/deleteByIds/{ids}")
+    @RequestMapping("/deleteByIds")
     @ResponseBody
-    public Result delete(@PathVariable("ids") String ids) {
+    @RequiresPermissions("teacher:deleteByIds:operation")
+    public Result delete(String ids) {
+        if(!Utils.isEmpty(ids)){
+            return ResultGenerator.genFailResult("编号为空！");
+        }
         if(BaseService.deleteByIds(ids,teacherMapper)<=0){
             return ResultGenerator.genFailResult("删除失败！"+ids);
         }

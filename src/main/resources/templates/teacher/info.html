@@ -5,6 +5,16 @@
     <title>添加 菜单||权限</title>
     <link th:href="@{/static/lib/bootstrap-4.4.1/css/bootstrap.css}" rel="stylesheet">
     <link th:href="@{/static/lib/layui/css/layui.css}" rel="stylesheet"/>
+    <style>
+        .uInfo{
+            width: 650px;
+            margin-left: -80px;
+            font-size: 18px;
+        }
+        .uInfo p{
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <div style="padding: 15px; background-color: #F2F2F2;">
@@ -20,16 +30,29 @@
                     </ul>
                     <div class="layui-tab-content" style="height: 575px;">
                         <div class="layui-tab-item layui-show">
+                            <div class="layui-row layui-col-space15" style="margin: 100px;">
+                                <div class="layui-col-md12 uInfo">
+                                    <div class="layui-col-sm6">
+                                        <p><span> 编号：</span><span th:text="${teacher.number}"></span></p>
+                                        <p><span> 姓名：</span><span th:text="${teacher.name}"></span></p>
+                                        <p><span> 性别：</span><span th:text="${teacher.sex}"></span></p>
+                                    </div>
+                                    <div class="layui-col-sm6">
+                                        <p><span> 职称：</span><span th:text="${teacher.rank}"></span></p>
+                                        <p><span> 邮箱：</span><span th:text="${teacher.email}"></span></p>
+                                    </div>
+                                    <hr style="margin-top: 10px;">
+                                    <div class="layui-col-sm6">
+                                        <p><span> 手机：</span><span th:text="${teacher.phone}"></span></p>
+                                        <p><span> 注册时间：</span><span th:text="${#dates.format(teacher.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                                    </div>
+                                    <div class="layui-col-sm6">
+                                        <p><span> 学院：</span><span th:text="${teacher.institute}"></span></p>
+                                        <p><span> 答疑信息：</span><span th:text="${teacher.answerInfo}"></span></p>
+                                    </div>
+                                </div>
+                            </div>
                             <hr>
-                            <p><span> 编号：</span><span th:text="${teacher.number}"></span></p>
-                            <p><span> 姓名：</span><span th:text="${teacher.name}"></span></p>
-                            <p><span> 邮箱：</span><span th:text="${teacher.email}"></span></p>
-                            <p><span> 性别：</span><span th:text="${teacher.sex}"></span></p>
-                            <p><span> 手机：</span><span th:text="${teacher.phone}"></span></p>
-                            <p><span> 职称：</span><span th:text="${teacher.rank}"></span></p>
-                            <p><span> 答疑信息：</span><span th:text="${teacher.answerInfo}"></span></p>
-                            <p><span> 学院：</span><span th:text="${teacher.institute}"></span></p>
-                            <p><span> 注册时间：</span><span th:text="${#dates.format(teacher.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
                         </div>
                         <div class="layui-tab-item">
                             <form class="layui-form" style="padding-top: 30px;">
